@@ -64,7 +64,7 @@ MultiDex中出现的main dex capacity exceeded解决之道中我们知道main de
 <meta property="og:image" content="http://developer.android.com/images/build.png">
 <meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/multi-dex-task.jpg">
 <meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/cc.png">
-<meta property="og:updated_time" content="2015-12-31T09:50:12.000Z">
+<meta property="og:updated_time" content="2015-12-31T14:37:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="android compile tasks中dex过程源码情景分析">
 <meta name="twitter:description" content="0x00 前言
@@ -324,7 +324,7 @@ MultiDex中出现的main dex capacity exceeded解决之道中我们知道main de
 <p><a href="http://ct2wj.com/2015/12/22/the-way-to-solve-main-dex-capacity-exceeded-in-Android-gradle-build/" target="_blank" rel="external">MultiDex中出现的main dex capacity exceeded解决之道</a>中我们知道main dex的class可以由maindexlist.txt指定，<a href="http://ct2wj.com/2015/12/24/android-multidex-source-code-analysis/" target="_blank" rel="external">Android MultiDex机制杂谈</a>中我们分析了google MultiDex机制中Secondary dex的install过程，那么，我们的app在android gradle build过程中，.dex文件是怎么创建的呢？ 再者，Secondary dex中的class是按什么顺序分配到不同dex中的呢？<br><a id="more"></a></p>
 <h1 id="0x01_android_build_system_u6982_u8FF0"><a href="#0x01_android_build_system_u6982_u8FF0" class="headerlink" title="0x01 android build system概述"></a>0x01 android build system概述</h1><hr>
 <p>为了解答上面的两个问题，本文将进一步分析android build system源码。</p>
-<p><a href="http://developer.android.com/intl/zh-cn/sdk/installing/studio-build.html" target="_blank" rel="external">android build system</a>是google提供的一组用来构建，运行，测试和打包我们app的工具集，包含了<code>aapt</code>,<code>aidl</code>,<code>javac</code>,<code>dex</code>,<code>apkbuilder</code>,<code>Jarsigner</code>,<code>zipalign</code>等工具。在我们构建app时，build进程会去按一定顺序调用上述工具来生成相应文件，而最终的输出将会是一个完整的可安装的.apk文件，构建流程如下：</p>
+<p><a href="http://developer.android.com/intl/zh-cn/sdk/installing/studio-build.html" target="_blank" rel="external">android build system</a>是google提供的一组用来构建、运行、测试和打包我们app的工具集，包含了<code>aapt</code>、<code>aidl</code>、<code>javac</code>、<code>dex</code>、<code>apkbuilder</code>、<code>Jarsigner</code>、<code>zipalign</code>等工具。在我们构建app时，build进程会去按一定顺序调用上述工具来生成相应文件，而最终的输出将会是一个完整的可安装的.apk文件，构建流程如下：</p>
 <p><img src="http://developer.android.com/images/build.png" alt=""></p>
 <p>构建系统先从product flavors, build types和dependencies中合并资源，如果不同目录下有重名资源，将按以下优先级进行覆盖：</p>
 <figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dependencies</span> &gt; build types &gt; product flavors &gt; main <span class="keyword">source</span> directory</span><br></pre></td></tr></table></figure>
@@ -402,10 +402,10 @@ MultiDex中出现的main dex capacity exceeded解决之道中我们知道main de
 <li>为传入的class创建DirectClassFile对象，对应.class字节码文件</li>
 <li>得到已经生成的dex的numMethodIds，numFieldIds</li>
 <li>得到新Class的constantPoolSize，计算maxMethodIdsInDex = numMethodIds + constantPoolSize + 新Class的方法数 + 2个预留method， 计算maxFieldIdsInDex = numFieldIds + constantPoolSize + 新Class的字段数 + 9个预留field</li>
-<li>一旦发现maxMethodIdsInDex &gt; args.maxNumberOfIdxPerDex 或 maxFieldIdsInDex &gt; args.maxNumberOfIdxPerDex，说明当前dex已经满了，调用createDexFile创建新dex来容纳该Class</li>
-<li>否则，通过CfTranslator.translate方法将输入的DirectClassFile对象，得到ClassDefItem，添加到outputDex(DexFile)</li>
+<li>一旦发现maxMethodIdsInDex &gt; args.maxNumberOfIdxPerDex 或者 maxFieldIdsInDex &gt; args.maxNumber OfIdxPerDex，说明当前dex已经满了，调用createDexFile创建新dex来容纳该Class</li>
+<li>否则，通过CfTranslator.translate方法将输入的DirectClassFile对象，得到ClassDefItem，添加到outputDex(: DexFile)</li>
 </ol>
-<p>至此可以看出：</p>
+<p>由此可以看出：</p>
 <blockquote>
 <p>secondray dex中的class是根据classes.jar中ZipEntry的遍历顺序添加的。</p>
 </blockquote>
@@ -419,7 +419,7 @@ MultiDex中出现的main dex capacity exceeded解决之道中我们知道main de
 <ul>
 <li><p>.dex文件本质上是.class文件经过com.android.dx.dex.file.DexFile.toDex方法转换得到</p>
 </li>
-<li><p>Secondary dex是在指定了multiDexEnabled = true且main dex满足65535限制，或者同时指定multiDexEnabled = true和minimalMainDex = true的情况下，而新建的dex，其包含的class是根据classes.jar中ZipEntry的遍历顺序添加的。</p>
+<li><p>Secondary dex是在指定了<code>multiDexEnabled = true且MainDex满足65535限制</code>，或者<code>指定multiDexEnabled = true和minimalMainDex = true</code>的情况下，才会创建的dex，其包含的class是根据classes.jar中ZipEntry的遍历顺序添加的。</p>
 </li>
 </ul>
 <hr>
@@ -549,7 +549,7 @@ MultiDex中出现的main dex capacity exceeded解决之道中我们知道main de
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">8</span>
               <span class="site-state-item-name">標籤</span>
               </a>
           </div>
