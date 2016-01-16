@@ -53,29 +53,26 @@
 
 
 
-<meta name="description" content="0x00 为什么需要MultiDex
-如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：
+<meta name="description" content="0x00 为什么需要MultiDex如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：
 12Conversion to Dalvik format failed:Unable to execute dex: method ID not in [0, 0xffff]: 65536
 或者
-123trouble writin">
+123trouble writing">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android MultiDex机制杂谈">
 <meta property="og:url" content="http://www.ct2wj.com/2015/12/24/android-multidex-source-code-analysis/index.html">
 <meta property="og:site_name" content="tomchen&fleur.wang's moving castle">
-<meta property="og:description" content="0x00 为什么需要MultiDex
-如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：
+<meta property="og:description" content="0x00 为什么需要MultiDex如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：
 12Conversion to Dalvik format failed:Unable to execute dex: method ID not in [0, 0xffff]: 65536
 或者
-123trouble writin">
+123trouble writing">
 <meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/cc.png">
-<meta property="og:updated_time" content="2016-01-14T01:00:57.000Z">
+<meta property="og:updated_time" content="2016-01-16T13:29:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android MultiDex机制杂谈">
-<meta name="twitter:description" content="0x00 为什么需要MultiDex
-如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：
+<meta name="twitter:description" content="0x00 为什么需要MultiDex如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：
 12Conversion to Dalvik format failed:Unable to execute dex: method ID not in [0, 0xffff]: 65536
 或者
-123trouble writin">
+123trouble writing">
 
 
 
@@ -327,8 +324,7 @@
       
 
       
-        <span itemprop="articleBody"><h1 id="0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex"><a href="#0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex" class="headerlink" title="0x00 为什么需要MultiDex"></a>0x00 为什么需要MultiDex</h1><hr>
-<p>如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：</p>
+        <span itemprop="articleBody"><h1 id="0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex"><a href="#0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex" class="headerlink" title="0x00 为什么需要MultiDex"></a>0x00 为什么需要MultiDex</h1><p>如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：</p>
 <figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Conversion <span class="keyword">to</span> Dalvik format failed:</span><br><span class="line">Unable <span class="keyword">to</span> execute dex: <span class="function"><span class="keyword">method</span> <span class="title">ID</span> <span class="title">not</span> <span class="title">in</span> [0, 0<span class="title">xffff</span>]:</span> <span class="number">65536</span></span><br></pre></td></tr></table></figure>
 <p>或者</p>
 <figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">trouble writing outpu<span class="variable">t:</span></span><br><span class="line">Too many field reference<span class="variable">s:</span> <span class="number">131000</span>; <span class="built_in">max</span> <span class="keyword">is</span> <span class="number">65536</span>.</span><br><span class="line">You may <span class="keyword">try</span> using --multi-dex option.</span><br></pre></td></tr></table></figure>
@@ -339,15 +335,15 @@
 <p>dalvik/dx/src/com/android/dx/merge/IndexMap.java</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * Maps the index offsets from one dex file to those in another. For example, if</span><br><span class="line"> * you have string #5 in the old dex file, its position in the new dex file is</span><br><span class="line"> * &#123;<span class="doctag">@code</span> strings[5]&#125;.</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">IndexMap</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Dex target;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span>[] stringIds;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">short</span>[] typeIds;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">short</span>[] protoIds;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">short</span>[] fieldIds;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">short</span>[] methodIds;</span><br></pre></td></tr></table></figure>
 <p>可以看到，methodIds，typeIds，protoIds，fieldIds都是short[]类型，对于每个具体的method来说都是限制在16bits。google dalvik开发者在这上面挖了个坑，MultiDex就是来填坑的。</p>
-<h1 id="0x01__u4F7F_u7528MultiDex"><a href="#0x01__u4F7F_u7528MultiDex" class="headerlink" title="0x01 使用MultiDex"></a>0x01 使用MultiDex</h1><hr>
-<p>MultiDex出现在google官方提供的support包里面，使用的时候需要在build.gradle中加上依赖：</p>
+<hr>
+<h1 id="0x01__u4F7F_u7528MultiDex"><a href="#0x01__u4F7F_u7528MultiDex" class="headerlink" title="0x01 使用MultiDex"></a>0x01 使用MultiDex</h1><p>MultiDex出现在google官方提供的support包里面，使用的时候需要在build.gradle中加上依赖：</p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile <span class="string">'com.android.support:multidex:1.0.0'</span></span><br></pre></td></tr></table></figure>
 <p>同时让app的Application继承MultiDexApplication</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MultiDexApplication</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MultiDexApplication</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">attachBaseContext</span><span class="params">(Context base)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.attachBaseContext(base);</span><br><span class="line">        MultiDex.install(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>也别忘了在build.gradle中修改：</p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">multiDexEnabled <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-<h1 id="0x02_MultiDex-install_u8FC7_u7A0B"><a href="#0x02_MultiDex-install_u8FC7_u7A0B" class="headerlink" title="0x02 MultiDex.install过程"></a>0x02 MultiDex.install过程</h1><hr>
-<p>先从MultiDex.install开始分析，传入的context是MultiDexApplication，loader是dalvik.system.PathClassLoader，运行时会先去app的dexDir /data/data/pkgname/code_cache/secondary-dexes下找secondary dex(除了main dex，其他都叫secondary dex，一个apk中可能存在多个secondary dex)，找到后先校验zip格式，没问题就直接installSecondaryDexes，否则会去强制从apk中重新extract secondary dex。</p>
+<hr>
+<h1 id="0x02_MultiDex-install_u8FC7_u7A0B"><a href="#0x02_MultiDex-install_u8FC7_u7A0B" class="headerlink" title="0x02 MultiDex.install过程"></a>0x02 MultiDex.install过程</h1><p>先从MultiDex.install开始分析，传入的context是MultiDexApplication，loader是dalvik.system.PathClassLoader，运行时会先去app的dexDir /data/data/pkgname/code_cache/secondary-dexes下找secondary dex(除了main dex，其他都叫secondary dex，一个apk中可能存在多个secondary dex)，找到后先校验zip格式，没问题就直接installSecondaryDexes，否则会去强制从apk中重新extract secondary dex。</p>
 <p>MultiDex.java</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">install</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">		...</span><br><span class="line">     ClassLoader loader;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         loader = context.getClassLoader();</span><br><span class="line">         ...</span><br><span class="line">         File dexDir = <span class="keyword">new</span> File(applicationInfo.dataDir, SECONDARY_FOLDER_NAME);</span><br><span class="line">         List&lt;File&gt; files = MultiDexExtractor.load(context, applicationInfo, dexDir, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">if</span> (checkValidZipFiles(files)) &#123;</span><br><span class="line">                installSecondaryDexes(loader, dexDir, files);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Log.w(TAG, <span class="string">"Files were not valid zip files.  Forcing a reload."</span>);</span><br><span class="line">                <span class="comment">// Try again, but this time force a reload of the zip file.</span></span><br><span class="line">                files = MultiDexExtractor.load(context, applicationInfo, dexDir, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (checkValidZipFiles(files)) &#123;</span><br><span class="line">                    installSecondaryDexes(loader, dexDir, files);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// Second time didn't work, give up</span></span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Zip files were not valid."</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure>
 <p>MultiDexExtractor.load方法中，sourceApk指向的是/data/app/pkgname.apk，然后通过getZipCrc获取apk的CRC校验码，去和最后一次CRC校验码对比，若一致或者不是forceReload，那么直接loadExistingExtractions，loadExistingExtractions直接为/data/data/pkgname/code_cache/secondary-dexes/下已经存在的.dex创建File对象；如果不一致说明apk已经被修改了，dex需要重新从apk中抽取，此时执行performExtractions。</p>
@@ -383,8 +379,8 @@
 <p>还有一点需要注意的是，DexPathList:makeDexElements最终会去做dex2opt，其中optimizedDirectory就是之前的dexDir，优化后的dex文件是pkgname.apk.classes2.dex，然而dex2opt会消耗较多的cpu时间，如果全部放在main线程去处理的话，比较影响用户体验，甚至可能引起ANR。</p>
 <p>DexPathList.java</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Element[] makeDexElements(ArrayList&lt;File&gt; files, File optimizedDirectory,</span><br><span class="line">                                         ArrayList&lt;IOException&gt; suppressedExceptions) &#123;</span><br><span class="line">    ArrayList&lt;Element&gt; elements = <span class="keyword">new</span> ArrayList&lt;Element&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (File file : files) &#123;</span><br><span class="line">        File zip = <span class="keyword">null</span>;</span><br><span class="line">        DexFile dex = <span class="keyword">null</span>;</span><br><span class="line">        String name = file.getName();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (file.isDirectory()) &#123;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (file.isFile())&#123;</span><br><span class="line">            <span class="keyword">if</span> (name.endsWith(DEX_SUFFIX)) &#123;</span><br><span class="line">                <span class="comment">// Raw dex file (not inside a zip/jar).</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    dex = loadDexFile(file, optimizedDirectory);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException ex) &#123;</span><br><span class="line">                    System.logE(<span class="string">"Unable to load dex file: "</span> + file, ex);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	...</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.logW(<span class="string">"ClassLoader referenced unknown path: "</span> + file);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ((zip != <span class="keyword">null</span>) || (dex != <span class="keyword">null</span>)) &#123;</span><br><span class="line">            elements.add(<span class="keyword">new</span> Element(file, <span class="keyword">false</span>, zip, dex));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> elements.toArray(<span class="keyword">new</span> Element[elements.size()]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="0x03__u63A2_u660E_u7684_u5751"><a href="#0x03__u63A2_u660E_u7684_u5751" class="headerlink" title="0x03 探明的坑"></a>0x03 探明的坑</h1><hr>
-<ul>
+<hr>
+<h1 id="0x03__u63A2_u660E_u7684_u5751"><a href="#0x03__u63A2_u660E_u7684_u5751" class="headerlink" title="0x03 探明的坑"></a>0x03 探明的坑</h1><ul>
 <li><p>坑1 如果secondary dex文件太大，可能导致应用在安装过程中出现ANR，这个在0x02 MultiDex.install的最后也提到过，规避方法以后将继续介绍。</p>
 </li>
 <li><p>坑2 Dalvik linearAlloc bug (<a href="https://code.google.com/p/android/issues/detail?id=22586" target="_blank" rel="external">Issue 22586</a>)：采用MutilDex方案的app在Android4.0以前的设备上可能会启动失败。</p>
@@ -506,21 +502,21 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">5</span>
               <span class="site-state-item-name">文章</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">分類</span>
               </a>
           </div>
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">標籤</span>
               </a>
           </div>

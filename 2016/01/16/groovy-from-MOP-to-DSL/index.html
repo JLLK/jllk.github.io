@@ -1,0 +1,826 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="DSL,MOP,gradle,groovy,metaprograming," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tomchen&fleur.wang's moving castle" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="0x00 前言
+groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类型语言的主要区别在哪呢，为什么gradle选择groovy实现自己的DSL? 它的优势在哪？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="groovy动态特性浅析：从MOP到DSL">
+<meta property="og:url" content="http://www.ct2wj.com/2016/01/16/groovy-from-MOP-to-DSL/index.html">
+<meta property="og:site_name" content="tomchen&fleur.wang's moving castle">
+<meta property="og:description" content="0x00 前言
+groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类型语言的主要区别在哪呢，为什么gradle选择groovy实现自己的DSL? 它的优势在哪？">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/614px-Groovy-logo.svg.png">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/TypeOfLanguages.jpg">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/groovy2java.jpg">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/How%20Groovy%20handles%20method%20calls%20on%20a%20POGO.png">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/cc.png">
+<meta property="og:updated_time" content="2016-01-16T13:57:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="groovy动态特性浅析：从MOP到DSL">
+<meta name="twitter:description" content="0x00 前言
+groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类型语言的主要区别在哪呢，为什么gradle选择groovy实现自己的DSL? 它的优势在哪？">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'post',
+    motion: true
+  };
+</script>
+
+  <title> groovy动态特性浅析：从MOP到DSL | tomchen&fleur.wang's moving castle </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-71641925-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?ba6dfd96f83113651e44d745cd86aa59";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">tomchen&fleur.wang's moving castle</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">This dog is lazy, left nothing</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分類
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            關於
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            標籤
+          </a>
+        </li>
+      
+
+      
+      
+        <li class="menu-item menu-item-search">
+          <a href="#" class="st-search-show-outputs">
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            檢索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'R7Hs2YB8usgTLynUrELe','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                groovy动态特性浅析：从MOP到DSL
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            發表於
+            <time itemprop="dateCreated" datetime="2016-01-16T21:04:21+08:00" content="2016-01-16">
+              2016-01-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分類於
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/groovy/" itemprop="url" rel="index">
+                    <span itemprop="name">groovy</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/01/16/groovy-from-MOP-to-DSL/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/16/groovy-from-MOP-to-DSL/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><blockquote>
+<p>groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类型语言的主要区别在哪呢，为什么gradle选择groovy实现自己的DSL? 它的优势在哪？</p>
+</blockquote>
+<p><img src="http://7xpcru.com1.z0.glb.clouddn.com/614px-Groovy-logo.svg.png" alt=""></p>
+<a id="more"></a>
+<hr>
+<h1 id="0x01__u9759_u6001_u548C_u52A8_u6001"><a href="#0x01__u9759_u6001_u548C_u52A8_u6001" class="headerlink" title="0x01 静态和动态"></a>0x01 静态和动态</h1><p>java是一门类型安全的语言，这种“安全”源于编译时编译器和运行时jvm对类型的检查。拥有编译时类型检查能力的语言，称为<code>静态类型</code>语言。静态语言能让类型错误尽量在编译时暴露，而非推迟到运行时，缺点是不利于快速编码和试错。与C++相比，java编译器做了许多工作，比如java泛型也是由编译器保证的。此外，由于在运行时jvm也会判断类型，所以java还是一种<code>强类型</code>的语言。</p>
+<p><img src="http://7xpcru.com1.z0.glb.clouddn.com/TypeOfLanguages.jpg" alt=""></p>
+<p>groovy和java本质上没区别，甚至可以看做是java的一个强大的语法糖，它的特点之一是<code>动态类型</code>，groovyc并不会去检查类型，编译后的代码在执行过程中大量使用了反射，这样做的好处是：</p>
+<ul>
+<li>没有强制类型转换，不用和编译器较劲了^_-</li>
+<li>调用方法时，不用立马关心方法的实现，让代码写起来非常灵活</li>
+<li>方便支持元编程，能在运行时动态添加方法和属性，便于设计DSL</li>
+</ul>
+<p>我们可以比较这几段代码来感受一下java和groovy反射调用时的区别：</p>
+<p>FleurWang.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FleurWang</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">say</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">"hello wonderland!"</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>HolyHoleInJava.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HolyHoleInJava</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">jumpInto</span><span class="params">(Object somebody)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Method method = somebody.getClass().getMethod(<span class="string">"say"</span>);</span><br><span class="line">            method.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            Object msg = method.invoke(somebody);</span><br><span class="line">            System.out.println(<span class="string">"someone jump into HolyHoleInJava, and say: "</span> + msg);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchMethodException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>HolyHolyInGroovy.groovy</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HolyHoleInGroovy</span> &#123;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="keyword">static</span> jumpIntoGroovy(somebody) &#123;</span><br><span class="line">        println <span class="string">"someone jump into HolyHoleInGroovy, and say: $&#123;somebody.say()&#125;"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">girl = <span class="keyword">new</span> FleurWang()</span><br><span class="line">HolyHoleInJava.jumpInto(girl)</span><br><span class="line">HolyHoleInGroovy.jumpIntoGroovy(girl)</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">someone jump <span class="keyword">into</span> HolyHoleInJava, <span class="keyword">and</span> <span class="command">say</span>: hello wonderland!</span><br><span class="line">someone jump <span class="keyword">into</span> HolyHoleInGroovy, <span class="keyword">and</span> <span class="command">say</span>: hello wonderland!</span><br></pre></td></tr></table></figure>
+<p>当然groovy也有一些还不够好的地方，例如：</p>
+<ul>
+<li>失去了编译时的类型检查，作为弥补，需要引入大量的单元测试代码来保证代码质量。</li>
+<li>相比java和scala混编，从java调用groovy代码很不方便。可以看下面代码感受一下~_~</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        GroovyShell shell = <span class="keyword">new</span> GroovyShell();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            shell.evaluate(<span class="keyword">new</span> File(<span class="string">"HolyHoleInGroovy.groovy"</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过从groovy调java代码还是挺方便的，以及java各种优秀的开源库支持，再加上groovy自身的优点，这也许就是groovy成为gradle的DSL的原因。</p>
+<hr>
+<h1 id="0x02__u5143_u7F16_u7A0B_u548C_u5143_u5BF9_u8C61_u534F_u8BAE"><a href="#0x02__u5143_u7F16_u7A0B_u548C_u5143_u5BF9_u8C61_u534F_u8BAE" class="headerlink" title="0x02 元编程和元对象协议"></a>0x02 元编程和元对象协议</h1><p>我们知道java中的类加载后行为就确定了，而groovy中的类却是动态可变的，这是因为groovy支持元编程（虽然也能用其他手段改变，如native hook，运行时修改字节码等，但这里只讨论语言特性是否支持)。元编程(metaprogramming)是指代码在运行时可以动态改变自己的行为，元对象协议(MOP, Meta-Object Protocol)用来保证动态语言中元编程能力。在groovy中，元对象协议主要通过反射、元类(metaclass)、expandos等技术实现。</p>
+<p>groovy世界中的类继承至java.lang.Object，并且实现了groovy.lang.GroovyObject接口，这个接口定义的invokeMethod, xxxProperty, xxxMetaClass让groovy对象具有动态扩展方法和属性的能力。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> groovy.lang;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GroovyObject</span> &#123;</span>	Object invokeMethod(String name, Object args); </span><br><span class="line">	Object getProperty(String property);	<span class="typename">void</span> setProperty(String property, Object newValue); </span><br><span class="line">	MetaClass getMetaClass();	<span class="typename">void</span> setMetaClass(MetaClass metaClass);￼￼￼￼￼￼￼￼&#125;</span><br></pre></td></tr></table></figure>
+<p>例如我们可以通过setMetaClass来改变FleurWang的行为。</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">girl = <span class="keyword">new</span> FleurWang()</span><br><span class="line"></span><br><span class="line">girl.metaClass.laughAt = &#123; somebody -&gt;</span><br><span class="line">    System.out.println(<span class="string">"$&#123;delegate.class.getSimpleName()&#125; is laughing at $somebody"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">girl.laughAt(<span class="string">"tomchen"</span>)</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FleurWang <span class="keyword">is</span> laughing <span class="keyword">at</span> tomchen</span><br></pre></td></tr></table></figure>
+<p>无论是java对象，还是groovy对象，每个对象的都有自己对应的MetaClass。groovy运行时生成进程唯一的MetaClassRegister对象，用于管理MetaClass和Class以及对象的映射关系。对于普通java对象而言，当它的方法被调用时，groovy会先去MetaClassRegister拿它的MetaClass看是否存在同名且同签名的方法。没有的话再去执行java对象本身的方法。因此，MetaClass的方法优先级高于原生方法。</p>
+<p><img src="http://7xpcru.com1.z0.glb.clouddn.com/groovy2java.jpg" alt=""></p>
+<p>对于groovy对象方法调用的容错会稍微多一点，groovy运行时会先检查对象是不是实现了GroovyInterceotable接口，是的话直接调用invokeMethod，否则会去MetaClass中找，如果没找到，那么会去Groovy对象本身找，还是没有的话，会去找Groovy对象否存在和方法同名的Closure类型字段closure，找到的话就直接closure()了。如果连这个字段都没有，也不会放弃，会尝试调用Groovy对象中的methodMissing方法，万一连这个也没有-_-，groovy还是会去做最后的努力，调用GroovyObject的invokeMethod()，没实现的话就会抛MissingMethodException。</p>
+<p><img src="http://7xpcru.com1.z0.glb.clouddn.com/How%20Groovy%20handles%20method%20calls%20on%20a%20POGO.png" alt=""></p>
+<hr>
+<h1 id="0x03__u4E00_u4E2A_u7B80_u5355_u7684DSL"><a href="#0x03__u4E00_u4E2A_u7B80_u5355_u7684DSL" class="headerlink" title="0x03 一个简单的DSL"></a>0x03 一个简单的DSL</h1><p>利用groovy的动态特性和元编程能力来构造一个简单的DSL：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MovingCastle</span> &#123;</span></span><br><span class="line">    <span class="keyword">def</span> level = <span class="number">0</span></span><br><span class="line">    <span class="keyword">def</span> result = <span class="keyword">new</span> StringWriter()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> members(closure) &#123;</span><br><span class="line">        result &lt;&lt; <span class="string">"tomchen&amp;fluer.wang's moving castle:\n"</span></span><br><span class="line">        closure.delegate = <span class="keyword">this</span></span><br><span class="line">        closure()</span><br><span class="line">        println result</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> methodMissing(String name, args) &#123;</span><br><span class="line">        handle(name, args)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> propertyMissing(String name) &#123;</span><br><span class="line">        Object[] emptyArray = []</span><br><span class="line">        handle(name, emptyArray)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> handle(String name, args) &#123;</span><br><span class="line">        level++</span><br><span class="line">        level.times &#123;</span><br><span class="line">            result &lt;&lt; <span class="string">" "</span></span><br><span class="line">        &#125;</span><br><span class="line">        result &lt;&lt; name.replaceAll(<span class="string">"_"</span>, <span class="string">" "</span>)</span><br><span class="line">        result &lt;&lt; printParameters(args)</span><br><span class="line">        result &lt;&lt; <span class="string">"\n"</span></span><br><span class="line">        <span class="keyword">if</span> (args.length &gt; <span class="number">0</span> &amp;&amp; args[-<span class="number">1</span>] <span class="keyword">instanceof</span> Closure) &#123;</span><br><span class="line">            <span class="keyword">def</span> theClosure = args[-<span class="number">1</span>]</span><br><span class="line">            theClosure.delegate = <span class="keyword">this</span></span><br><span class="line">            theClosure()</span><br><span class="line">        &#125;</span><br><span class="line">        level--</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> printParameters(args) &#123;</span><br><span class="line">        <span class="keyword">def</span> values = <span class="string">""</span></span><br><span class="line">        <span class="keyword">if</span> (args.length &gt; <span class="number">0</span> &amp;&amp; args[<span class="number">0</span>] <span class="keyword">instanceof</span> Map) &#123;</span><br><span class="line">            values += <span class="string">" ["</span></span><br><span class="line">            <span class="keyword">def</span> count = <span class="number">0</span></span><br><span class="line">            args[<span class="number">0</span>].each &#123; key, value -&gt;</span><br><span class="line">                count++</span><br><span class="line">                values += (count &gt; <span class="number">1</span> ? " " : <span class="string">""</span>)</span><br><span class="line">                values += <span class="string">"$&#123;key&#125;: $&#123;value&#125;"</span></span><br><span class="line">            &#125;</span><br><span class="line">            values += <span class="string">"]"</span></span><br><span class="line">        &#125;</span><br><span class="line">        values</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输入</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">castle = <span class="keyword">new</span> MovingCastle()</span><br><span class="line">castle.members &#123;</span><br><span class="line">    tomchen &#123;</span><br><span class="line">        about(<span class="string">github:</span> <span class="string">"https://github.com/jllk"</span>)</span><br><span class="line">        lauguage &#123;</span><br><span class="line">            java</span><br><span class="line">            scala</span><br><span class="line">            c</span><br><span class="line">            golang</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    fluerWang &#123;</span><br><span class="line">        about(<span class="string">github:</span> <span class="string">"https://github.com/fleurWang"</span>)</span><br><span class="line">        lauguage &#123;</span><br><span class="line">            javascript</span><br><span class="line">            html</span><br><span class="line">            css</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">tomchen&amp;fluer.wang's moving castle:</span><br><span class="line"> tomchen</span><br><span class="line">  <span class="keyword">about</span> [github: https:<span class="comment">//github.com/jllk]</span></span><br><span class="line">  lauguage</span><br><span class="line">   java</span><br><span class="line">   <span class="keyword">scala</span></span><br><span class="line">   c</span><br><span class="line">   golang</span><br><span class="line"> fluerWang</span><br><span class="line">  <span class="keyword">about</span> [github: https:<span class="comment">//github.com/fleurWang]</span></span><br><span class="line">  lauguage</span><br><span class="line">   javascript</span><br><span class="line">   html</span><br><span class="line">   css</span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="u53C2_u8003"><a href="#u53C2_u8003" class="headerlink" title="参考"></a>参考</h4><ol>
+<li><p><a href="https://pragprog.com/book/vslg2/programming-groovy-2" target="_blank" rel="external">programming Groovy 2</a></p>
+</li>
+<li><p><a href="http://www.amazon.com/Groovy-Domain-Specific-Languages-Fergal-Dearle/dp/1849695407/ref=sr_1_1?ie=UTF8&amp;qid=1452654163&amp;sr=8-1&amp;keywords=Groovy_for_Domain-Specific_Languages" target="_blank" rel="external">Groovy for Domain-Specific Languages - Second Edition</a></p>
+</li>
+</ol>
+<hr>
+<h4 id="u7248_u6743_u58F0_u660E"><a href="#u7248_u6743_u58F0_u660E" class="headerlink" title="版权声明"></a>版权声明</h4><p><img src="http://7xpcru.com1.z0.glb.clouddn.com/cc.png" alt=""></p>
+<p><a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a> by <a href="http://ct2wj.com/about" target="_blank" rel="external">CHEN TAO</a> is licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">Creative Commons BY-NC-ND 4.0 International License</a>.</p>
+<p>由<a href="http://ct2wj.com/about" target="_blank" rel="external">陈涛</a>创作并维护的<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客采用<a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。</p>
+<p>本文首发于<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客（ <a href="http://ct2wj.com" target="_blank" rel="external">http://ct2wj.com</a> ），版权所有，侵权必究。</p>
+<p>本文永久链接：<a href="http://ct2wj.com/2016/1/16/groovy-from-MOP-to-DSL/" target="_blank" rel="external">http://ct2wj.com/2016/1/16/groovy-from-MOP-to-DSL/</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/DSL/" rel="tag">#DSL</a>
+          
+            <a href="/tags/MOP/" rel="tag">#MOP</a>
+          
+            <a href="/tags/gradle/" rel="tag">#gradle</a>
+          
+            <a href="/tags/groovy/" rel="tag">#groovy</a>
+          
+            <a href="/tags/metaprograming/" rel="tag">#metaprograming</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/31/dex-source-analysis-in-android-compile-tasks/" rel="next" title="android compile tasks中dex过程源码情景分析">
+                <i class="fa fa-chevron-left"></i> android compile tasks中dex过程源码情景分析
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/01/16/groovy-from-MOP-to-DSL/"
+           data-title="groovy动态特性浅析：从MOP到DSL" data-url="http://www.ct2wj.com/2016/01/16/groovy-from-MOP-to-DSL/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="http://7xpcru.com1.z0.glb.clouddn.com/jllk.png" alt="tomchen" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">tomchen</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">This dog is lazy, left nothing</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-name">分類</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">標籤</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jllk" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> github
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-nd/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-nd.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00__u524D_u8A00"><span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01__u9759_u6001_u548C_u52A8_u6001"><span class="nav-text">0x01 静态和动态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02__u5143_u7F16_u7A0B_u548C_u5143_u5BF9_u8C61_u534F_u8BAE"><span class="nav-text">0x02 元编程和元对象协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03__u4E00_u4E2A_u7B80_u5355_u7684DSL"><span class="nav-text">0x03 一个简单的DSL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#u53C2_u8003"><span class="nav-text">参考</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#u7248_u6743_u58F0_u660E"><span class="nav-text">版权声明</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tomchen</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ct2wj"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>

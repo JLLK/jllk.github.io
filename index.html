@@ -267,6 +267,112 @@
             
               
                 
+                <a class="post-title-link" href="/2016/01/16/groovy-from-MOP-to-DSL/" itemprop="url">
+                  groovy动态特性浅析：从MOP到DSL
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            發表於
+            <time itemprop="dateCreated" datetime="2016-01-16T21:04:21+08:00" content="2016-01-16">
+              2016-01-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分類於
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/groovy/" itemprop="url" rel="index">
+                    <span itemprop="name">groovy</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/01/16/groovy-from-MOP-to-DSL/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/16/groovy-from-MOP-to-DSL/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        
+          <h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><blockquote>
+<p>groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类型语言的主要区别在哪呢，为什么gradle选择groovy实现自己的DSL? 它的优势在哪？</p>
+</blockquote>
+<p><img src="http://7xpcru.com1.z0.glb.clouddn.com/614px-Groovy-logo.svg.png" alt=""></p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/01/16/groovy-from-MOP-to-DSL/#more" rel="contents">
+              閱讀全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2015/12/31/dex-source-analysis-in-android-compile-tasks/" itemprop="url">
                   android compile tasks中dex过程源码情景分析
                 </a>
@@ -325,8 +431,9 @@
 
       
         
-          <h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><hr>
-<p><a href="http://ct2wj.com/2015/12/22/the-way-to-solve-main-dex-capacity-exceeded-in-Android-gradle-build/">MultiDex中出现的main dex capacity exceeded解决之道</a>中我们知道main dex的class可以由maindexlist.txt指定，<a href="http://ct2wj.com/2015/12/24/android-multidex-source-code-analysis/">Android MultiDex机制杂谈</a>中我们分析了google MultiDex机制中Secondary dex的install过程，那么，我们的app在android gradle build过程中，.dex文件是怎么创建的呢？ 再者，Secondary dex中的class是按什么顺序分配到不同dex中的呢？<br>
+          <h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><blockquote>
+<p><a href="http://ct2wj.com/2015/12/22/the-way-to-solve-main-dex-capacity-exceeded-in-Android-gradle-build/">MultiDex中出现的main dex capacity exceeded解决之道</a>中我们知道main dex的class可以由maindexlist.txt指定，<a href="http://ct2wj.com/2015/12/24/android-multidex-source-code-analysis/">Android MultiDex机制杂谈</a>中我们分析了google MultiDex机制中Secondary dex的install过程，那么，我们的app在android gradle build过程中，.dex文件是怎么创建的呢？ 再者，Secondary dex中的class是按什么顺序分配到不同dex中的呢？</p>
+</blockquote>
           <div class="post-more-link text-center">
             <a class="btn" href="/2015/12/31/dex-source-analysis-in-android-compile-tasks/#more" rel="contents">
               閱讀全文 &raquo;
@@ -429,8 +536,7 @@
 
       
         
-          <h1 id="0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex"><a href="#0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex" class="headerlink" title="0x00 为什么需要MultiDex"></a>0x00 为什么需要MultiDex</h1><hr>
-<p>如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：</p>
+          <h1 id="0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex"><a href="#0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex" class="headerlink" title="0x00 为什么需要MultiDex"></a>0x00 为什么需要MultiDex</h1><p>如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：</p>
 <figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Conversion <span class="keyword">to</span> Dalvik format failed:</span><br><span class="line">Unable <span class="keyword">to</span> execute dex: <span class="function"><span class="keyword">method</span> <span class="title">ID</span> <span class="title">not</span> <span class="title">in</span> [0, 0<span class="title">xffff</span>]:</span> <span class="number">65536</span></span><br></pre></td></tr></table></figure>
 <p>或者</p>
 <figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">trouble writing outpu<span class="variable">t:</span></span><br><span class="line">Too many field reference<span class="variable">s:</span> <span class="number">131000</span>; <span class="built_in">max</span> <span class="keyword">is</span> <span class="number">65536</span>.</span><br><span class="line">You may <span class="keyword">try</span> using --multi-dex option.</span><br></pre></td></tr></table></figure>
@@ -625,8 +731,7 @@
 
       
         
-          <h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><hr>
-<blockquote>
+          <h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><blockquote>
 <p>随着业务的日益壮大，在集成构建实践中发现，dalvik上的MultiDex拆包方案频繁出现main dex capacity exceeded导致编译失败，对app的年末上线构成了严峻挑战，本文通过控制maindexlist中class的数量，达到减少MainDex体积，避免exceeded的目的。</p>
 </blockquote>
           <div class="post-more-link text-center">
@@ -694,21 +799,21 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">5</span>
               <span class="site-state-item-name">文章</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">分類</span>
               </a>
           </div>
 
           <div class="site-state-item site-state-tags">
             <a href="/tags">
-              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">標籤</span>
               </a>
           </div>
