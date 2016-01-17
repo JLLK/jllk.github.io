@@ -4,7 +4,7 @@
   <subtitle><![CDATA[This dog is lazy, left nothing]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.ct2wj.com/"/>
-  <updated>2016-01-16T14:07:19.000Z</updated>
+  <updated>2016-01-17T14:04:33.000Z</updated>
   <id>http://www.ct2wj.com/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://www.ct2wj.com/2016/01/16/groovy-from-MOP-to-DSL/"/>
     <id>http://www.ct2wj.com/2016/01/16/groovy-from-MOP-to-DSL/</id>
     <published>2016-01-16T13:04:21.000Z</published>
-    <updated>2016-01-16T14:07:19.000Z</updated>
+    <updated>2016-01-17T14:04:33.000Z</updated>
     <content type="html"><![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><blockquote>
 <p>groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类型语言的主要区别在哪呢，为什么gradle选择groovy实现自己的DSL? 它的优势在哪？</p>
 </blockquote>
@@ -27,7 +27,7 @@
 <a id="more"></a>
 <hr>
 <h1 id="0x01__u9759_u6001_u548C_u52A8_u6001"><a href="#0x01__u9759_u6001_u548C_u52A8_u6001" class="headerlink" title="0x01 静态和动态"></a>0x01 静态和动态</h1><p>java是一门类型安全的语言，这种“安全”源于编译时编译器和运行时jvm对类型的检查。拥有编译时类型检查能力的语言，称为<code>静态类型</code>语言。静态语言能让类型错误尽量在编译时暴露，而非推迟到运行时，缺点是不利于快速编码和试错。与C++相比，java编译器做了许多工作，比如java泛型也是由编译器保证的。此外，由于在运行时jvm也会判断类型，所以java还是一种<code>强类型</code>的语言。</p>
-<p><img src="http://7xpcru.com1.z0.glb.clouddn.com/TypeOfLanguages.jpg" alt=""></p>
+<p><img src="http://7xpcru.com1.z0.glb.clouddn.com/languagesTypes.jpg" alt=""></p>
 <p>groovy和java本质上没区别，甚至可以看做是java的一个强大的语法糖，它的特点之一是<code>动态类型</code>，groovyc并不会去检查类型，编译后的代码在执行过程中大量使用了反射，这样做的好处是：</p>
 <ul>
 <li>没有强制类型转换，不用和编译器较劲了^_-</li>
@@ -62,7 +62,7 @@
 <figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FleurWang <span class="keyword">is</span> laughing <span class="keyword">at</span> tomchen</span><br></pre></td></tr></table></figure>
 <p>无论是java对象，还是groovy对象，每个对象的都有自己对应的MetaClass。groovy运行时生成进程唯一的MetaClassRegister对象，用于管理MetaClass和Class以及对象的映射关系。对于普通java对象而言，当它的方法被调用时，groovy会先去MetaClassRegister拿它的MetaClass看是否存在同名且同签名的方法。没有的话再去执行java对象本身的方法。因此，MetaClass的方法优先级高于原生方法。</p>
 <p><img src="http://7xpcru.com1.z0.glb.clouddn.com/groovy2java.jpg" alt=""></p>
-<p>对于groovy对象方法调用的容错会稍微多一点，groovy运行时会先检查对象是不是实现了GroovyInterceotable接口，是的话直接调用invokeMethod，否则会去MetaClass中找，如果没找到，那么会去Groovy对象本身找，还是没有的话，会去找Groovy对象否存在和方法同名的Closure类型字段closure，找到的话就直接closure()了。如果连这个字段都没有，也不会放弃，会尝试调用Groovy对象中的methodMissing方法，万一连这个也没有-_-，groovy还是会去做最后的努力，调用GroovyObject的invokeMethod()，没实现的话就会抛MissingMethodException。</p>
+<p>对于groovy对象方法调用的容错会稍微多一点，groovy运行时会先检查对象是不是实现了GroovyInterceptable接口，是的话直接调用invokeMethod，否则会去MetaClass中找，如果没找到，那么会去Groovy对象本身找，还是没有的话，会去找Groovy对象否存在和方法同名的Closure类型字段closure，找到的话就直接closure()了。如果连这个字段都没有，也不会放弃，会尝试调用Groovy对象中的methodMissing方法，万一连这个也没有-_-，groovy还是会去做最后的努力，调用GroovyObject的invokeMethod()，没实现的话就会抛MissingMethodException。</p>
 <p><img src="http://7xpcru.com1.z0.glb.clouddn.com/How%20Groovy%20handles%20method%20calls%20on%20a%20POGO.png" alt=""></p>
 <hr>
 <h1 id="0x03__u4E00_u4E2A_u7B80_u5355_u7684DSL"><a href="#0x03__u4E00_u4E2A_u7B80_u5355_u7684DSL" class="headerlink" title="0x03 一个简单的DSL"></a>0x03 一个简单的DSL</h1><p>利用groovy的动态特性和元编程能力来构造一个简单的DSL：</p>
@@ -72,12 +72,8 @@
 <p>输出</p>
 <figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">tomchen&amp;fluer.wang's moving castle:</span><br><span class="line"> tomchen</span><br><span class="line">  <span class="keyword">about</span> [github: https:<span class="comment">//github.com/jllk]</span></span><br><span class="line">  lauguage</span><br><span class="line">   java</span><br><span class="line">   <span class="keyword">scala</span></span><br><span class="line">   c</span><br><span class="line">   golang</span><br><span class="line"> fluerWang</span><br><span class="line">  <span class="keyword">about</span> [github: https:<span class="comment">//github.com/fleurWang]</span></span><br><span class="line">  lauguage</span><br><span class="line">   javascript</span><br><span class="line">   html</span><br><span class="line">   css</span><br></pre></td></tr></table></figure>
 <hr>
-<h4 id="u53C2_u8003"><a href="#u53C2_u8003" class="headerlink" title="参考"></a>参考</h4><ol>
-<li><p><a href="https://pragprog.com/book/vslg2/programming-groovy-2" target="_blank" rel="external">programming Groovy 2</a></p>
-</li>
-<li><p><a href="http://www.amazon.com/Groovy-Domain-Specific-Languages-Fergal-Dearle/dp/1849695407/ref=sr_1_1?ie=UTF8&amp;qid=1452654163&amp;sr=8-1&amp;keywords=Groovy_for_Domain-Specific_Languages" target="_blank" rel="external">Groovy for Domain-Specific Languages - Second Edition</a></p>
-</li>
-</ol>
+<h4 id="u53C2_u8003"><a href="#u53C2_u8003" class="headerlink" title="参考"></a>参考</h4><p>[1]. <a href="https://pragprog.com/book/vslg2/programming-groovy-2" target="_blank" rel="external">programming Groovy 2</a></p>
+<p>[2]. <a href="http://www.amazon.com/Groovy-Domain-Specific-Languages-Fergal-Dearle/dp/1849695407/ref=sr_1_1?ie=UTF8&amp;qid=1452654163&amp;sr=8-1&amp;keywords=Groovy_for_Domain-Specific_Languages" target="_blank" rel="external">Groovy for Domain-Specific Languages - Second Edition</a></p>
 <hr>
 <h4 id="u7248_u6743_u58F0_u660E"><a href="#u7248_u6743_u58F0_u660E" class="headerlink" title="版权声明"></a>版权声明</h4><p><img src="http://7xpcru.com1.z0.glb.clouddn.com/cc.png" alt=""></p>
 <p><a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a> by <a href="http://ct2wj.com/about" target="_blank" rel="external">CHEN TAO</a> is licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">Creative Commons BY-NC-ND 4.0 International License</a>.</p>
