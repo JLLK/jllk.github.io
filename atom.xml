@@ -4,7 +4,7 @@
   <subtitle><![CDATA[This dog is lazy, left nothing]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.ct2wj.com/"/>
-  <updated>2016-01-17T14:04:33.000Z</updated>
+  <updated>2016-02-09T13:23:09.000Z</updated>
   <id>http://www.ct2wj.com/</id>
   
   <author>
@@ -13,6 +13,111 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[一种按模块拆分和适机加载dex的方法]]></title>
+    <link href="http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/"/>
+    <id>http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/</id>
+    <published>2016-02-09T10:59:53.000Z</published>
+    <updated>2016-02-09T13:23:09.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
+<ul>
+<li>maindex不会引入业务代码，可减少maindex体积</li>
+<li>运行时，可延迟加载业务dex，减少app启动时间</li>
+<li>能做一些有趣的工作，例如统计各个业务线模块启动时间</li>
+</ul>
+<p>本文在google multidex的基础上，通过应用<a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">multidex-maker</a>,<a href="https://github.com/JLLK/multidex-installer" target="_blank" rel="external">multidex-installer</a>和<a href="https://github.com/JLLK/multidex-hook" target="_blank" rel="external">multidex-hook</a>，实现secondary dex的按模块拆分和适机延迟加载，并在文章最后给出了一个示例app：<a href="https://github.com/JLLK/multidex-sample" target="_blank" rel="external">multidex-sample</a>。<br><a id="more"></a></p>
+<hr>
+<h1 id="0x01_multidex-maker"><a href="#0x01_multidex-maker" class="headerlink" title="0x01 multidex-maker"></a>0x01 multidex-maker</h1><p><a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">multidex-maker</a>(<a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">https://github.com/JLLK/multidex-maker</a>)用来确保每个模块的class划分到自己的secondary dex。安装multidex-maker首先需要执行<code>./install.sh</code>。这一步会先编译multidex-maker，输出dx.jar。</p>
+<p>请检查<code>~/Library/Android/sdk/platforms/android-${SDK_VERSION}/android.jar</code>中<code>SDK_VERSION</code>是否存在（默认是<code>17</code>)，编译完成后，会自动替换<code>~/Library/Android/sdk/build-tools/${BUILD_TOOL_VERSION}/lib</code>下的dx.jar，<code>BUILD_TOOL_VERSION</code>默认是<code>23.0.1</code>，如果build-tools中没有<code>23.0.1</code>请换成其他版本：</p>
+<p>install.sh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SDK_VERSION=<span class="number">17</span>			<span class="comment"># change to your version</span></span><br><span class="line"></span><br><span class="line">BUILD_TOOL_VERSION=<span class="number">23.0</span>.<span class="number">1</span>	<span class="comment"># change to your version</span></span><br></pre></td></tr></table></figure>
+<p>然后，在<code>build.gradle</code>中加上：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    afterEvaluate &#123;</span><br><span class="line">        tasks.matching &#123;</span><br><span class="line">            it.name.startsWith(<span class="string">"dex"</span>)</span><br><span class="line">        &#125;.each &#123; dx -&gt;</span><br><span class="line">            <span class="keyword">if</span> (dx.additionalParameters == <span class="literal">null</span>) &#123;</span><br><span class="line">                dx.additionalParameters = []</span><br><span class="line">            &#125;</span><br><span class="line">            dx.additionalParameters += <span class="string">"--main-dex-list=$projectDir/maindexlist.txt"</span>.toString()</span><br><span class="line">            dx.additionalParameters += <span class="string">"--secondary-dexes-list=$projectDir/secondarydexeslist.txt"</span>.toString()</span><br><span class="line">            dx.additionalParameters += <span class="string">"--minimal-main-dex"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>--secondary-dexes-list</code>是multidex-maker新加的编译参数，可以带上一个secondarydexeslist.txt文件，支持用<code>--secondary-dex-begin</code>和<code>--secondary-dex-end</code>把需要单独拆成dex的module的包名包含进来，例如示例app中的secondarydexeslist.txt：</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span>    </span><br><span class="line"></span>com/github/jllk/multidex/sample/R</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span>    </span><br><span class="line"></span>scala/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span>	</span><br><span class="line"></span>com/github/jllk/multidex/sample/a/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span></span><br><span class="line"></span>com/github/jllk/multidex/sample/b/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span></span><br><span class="line"></span>com/github/jllk/multidex/sample/c/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span></span><br><span class="line"></span>com/github/jllk/multidex/sample/d/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span></span><br></pre></td></tr></table></figure>
+<p>安装完成multidex-maker之后，在gradle build app时可以得到一个<strong>按模块拆分成多个secondary dex</strong>的app。</p>
+<hr>
+<h1 id="0x02_multidex-installer"><a href="#0x02_multidex-installer" class="headerlink" title="0x02 multidex-installer"></a>0x02 multidex-installer</h1><p>如果仅仅拆分了secondary dex，app应该还<a href="http://ct2wj.com/2015/12/22/the-way-to-solve-main-dex-capacity-exceeded-in-Android-gradle-build/" target="_blank" rel="external">不能运行</a>。一种解决方法是我们可以采用google multidex库的支持，选择在<code>Application.attachBaseContext</code>时调用<code>MultiDex.install(this)</code>。但这样会将secondary dexes一次性加载进来，失去了根据业务线的实际情况加载dex的优势。</p>
+<p><a href="https://github.com/JLLK/multidex-installer" target="_blank" rel="external">multidex-installer</a>(<a href="https://github.com/JLLK/multidex-installer" target="_blank" rel="external">https://github.com/JLLK/multidex-installer</a>)支持按dex索引来加载dex，提供了三种加载方案：<code>installAll</code>、<code>installOne</code>和<code>installRange</code>：</p>
+<p>JLLKMultiDexInstaller.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Install all dexes in sourceApk</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">installAll</span><span class="params">(Context context)</span></span><br><span class="line">   </span><br><span class="line">   <span class="comment">// Install one dex by index</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">installOne</span><span class="params">(Context context, <span class="keyword">int</span> dexIndex)</span></span><br><span class="line">   </span><br><span class="line">   <span class="comment">// Install dexes by range index</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">installRange</span><span class="params">(Context context, <span class="keyword">int</span> startDexIndex, <span class="keyword">int</span> endDexIndex)</span></span></span><br></pre></td></tr></table></figure>
+<p>使用multidex-installer需要在build.gradle中添加：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    compile fileTree(<span class="string">dir:</span> <span class="string">'libs'</span>, <span class="string">include:</span> [<span class="string">'*.jar'</span>])</span><br><span class="line">    compile <span class="string">"com.github.jllk:multidex-installer:0.0.4-beta@aar"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后修改<code>attachBaseContext</code>，添加几行代码，让multidex-installer工作起来：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SampleApp</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Application</span> &#123;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">attachBaseContext</span>(</span>base: <span class="type">Context</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">super</span>.attachBaseContext(base)</span><br><span class="line">    <span class="type">JLLKMultiDexInstaller</span>.installOne(<span class="keyword">this</span>, <span class="number">2</span>) <span class="comment">// for R</span></span><br><span class="line">    <span class="type">JLLKMultiDexInstaller</span>.installRange(<span class="keyword">this</span>, <span class="number">3</span>, <span class="number">4</span>) <span class="comment">// for scala</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="0x03_multidex-hook"><a href="#0x03_multidex-hook" class="headerlink" title="0x03 multidex-hook"></a>0x03 multidex-hook</h1><p>app启动时，在<code>Application.attachBaseContext</code>中加载dex也许不是最好的时机，假如用户没有使用模块A的功能，模块A对应的dex是没必要立刻加载的。更好的办法是在恰当的时机延迟加载dex，本文称为<strong>适机加载</strong>。</p>
+<p>为此，本文提出了<a href="https://github.com/JLLK/multidex-hook" target="_blank" rel="external">multidex-hook</a>(<a href="https://github.com/JLLK/multidex-hook" target="_blank" rel="external">https://github.com/JLLK/multidex-hook</a>)，通过hook本应用进程的<code>Instrumentation</code>，在<code>Instrumentation.execStartActivity</code>方法被调用时，根据所启动模块的Activity的完全限定名来获得dex索引，再用multidex-installer加载相应dex。</p>
+<p>JLLKInstrumentationProxy.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> ActivityResult <span class="title">execStartActivityProxy</span><span class="params">(Context who, Intent intent, IExecStartActivityDelegate delegate)</span> </span>&#123;</span><br><span class="line">    String className = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (intent.getComponent().getClassName() == <span class="keyword">null</span>) &#123;</span><br><span class="line">        ResolveInfo resolveInfo = getContext().getPackageManager()</span><br><span class="line">                .resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);</span><br><span class="line">        <span class="keyword">if</span> (resolveInfo != <span class="keyword">null</span>) &#123;</span><br><span class="line">            className = resolveInfo.activityInfo.name;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        className = intent.getComponent().getClassName();</span><br><span class="line">    &#125;</span><br><span class="line">    Log.d(TAG, <span class="string">"[execStartActivityProxy] "</span> + className);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Install secondary dex by index.</span></span><br><span class="line">    <span class="keyword">int</span> dexIdx = JLLKMultiDexHook.getModuleDexIdx(className);</span><br><span class="line">    <span class="keyword">if</span> (dexIdx &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        JLLKMultiDexInstaller.installOne(who, dexIdx);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> delegate.execStartActivity();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="0x04_multidex-sample"><a href="#0x04_multidex-sample" class="headerlink" title="0x04 multidex-sample"></a>0x04 multidex-sample</h1><p>本文的最后介绍示例app <a href="https://github.com/JLLK/multidex-sample" target="_blank" rel="external">multidex-sample</a>(<a href="https://github.com/JLLK/multidex-sample" target="_blank" rel="external">https://github.com/JLLK/multidex-sample</a>)，它同时用到了multidex-maker，multidex-installer和multidex-hook。构建完成后，multidex-sample输出的dex如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt; du -sh *<span class="class">.dex</span></span><br><span class="line"><span class="number">40</span>K	classes<span class="class">.dex</span></span><br><span class="line"><span class="number">4.0</span>K	classes2<span class="class">.dex</span></span><br><span class="line"><span class="number">7.0</span>M	classes3<span class="class">.dex</span></span><br><span class="line"><span class="number">1.7</span>M	classes4<span class="class">.dex</span></span><br><span class="line"><span class="number">12</span>K	classes5<span class="class">.dex</span></span><br><span class="line"><span class="number">12</span>K	classes6<span class="class">.dex</span></span><br><span class="line"><span class="number">12</span>K	classes7<span class="class">.dex</span></span><br><span class="line"><span class="number">12</span>K	classes8<span class="class">.dex</span></span><br><span class="line"><span class="number">28</span>K	classes9.dex</span><br></pre></td></tr></table></figure>
+<p>其中，maindex（图左）仅包含multidex-installer和multidex-hook以及各模块X（a,b,c）的入口SampleActivityX，模块A（图右）仅包含业务相关的class：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">maindex</th>
+<th style="text-align:center">Secondary dex: module A</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><img src="http://7xpcru.com1.z0.glb.clouddn.com/maindex.png?imageView2/2/w/300" alt=""></td>
+<td style="text-align:center"><img src="http://7xpcru.com1.z0.glb.clouddn.com/module-A.png?imageView2/2/w/320" alt=""></td>
+</tr>
+</tbody>
+</table>
+<p>以及完美的运行：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">MainActivity</th>
+<th style="text-align:center">SampleActivityA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><img src="http://7xpcru.com1.z0.glb.clouddn.com/MainActivity.png?imageView2/2/w/280" alt=""></td>
+<td style="text-align:center"><img src="http://7xpcru.com1.z0.glb.clouddn.com/ActivityA.png?imageView2/2/w/280" alt=""></td>
+</tr>
+</tbody>
+</table>
+<p>Done! ^_-</p>
+<hr>
+<h4 id="u7248_u6743_u58F0_u660E"><a href="#u7248_u6743_u58F0_u660E" class="headerlink" title="版权声明"></a>版权声明</h4><p><img src="http://7xpcru.com1.z0.glb.clouddn.com/cc.png" alt=""></p>
+<p><a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a> by <a href="http://ct2wj.com/about" target="_blank" rel="external">CHEN TAO</a> is licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">Creative Commons BY-NC-ND 4.0 International License</a>.</p>
+<p>由<a href="http://ct2wj.com/about" target="_blank" rel="external">陈涛</a>创作并维护的<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客采用<a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。</p>
+<p>本文首发于<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客（ <a href="http://ct2wj.com" target="_blank" rel="external">http://ct2wj.com</a> ），版权所有，侵权必究。</p>
+<p>本文永久链接：<a href="http://ct2wj.com/2016/02/09/one-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/" target="_blank" rel="external">http://ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
+<ul>
+<li>maindex不会引入业务代码，可减少maindex体积</li>
+<li>运行时，可延迟加载业务dex，减少app启动时间</li>
+<li>能做一些有趣的工作，例如统计各个业务线模块启动时间</li>
+</ul>
+<p>本文在google multidex的基础上，通过应用<a href="https://github.com/JLLK/multidex-maker">multidex-maker</a>,<a href="https://github.com/JLLK/multidex-installer">multidex-installer</a>和<a href="https://github.com/JLLK/multidex-hook">multidex-hook</a>，实现secondary dex的按模块拆分和适机延迟加载，并在文章最后给出了一个示例app：<a href="https://github.com/JLLK/multidex-sample">multidex-sample</a>。<br>]]>
+    
+    </summary>
+    
+      <category term="Android" scheme="http://www.ct2wj.com/tags/Android/"/>
+    
+      <category term="MainDex" scheme="http://www.ct2wj.com/tags/MainDex/"/>
+    
+      <category term="MultiDex" scheme="http://www.ct2wj.com/tags/MultiDex/"/>
+    
+      <category term="SecondaryDex" scheme="http://www.ct2wj.com/tags/SecondaryDex/"/>
+    
+      <category term="build system" scheme="http://www.ct2wj.com/tags/build-system/"/>
+    
+      <category term="dex" scheme="http://www.ct2wj.com/tags/dex/"/>
+    
+      <category term="Android" scheme="http://www.ct2wj.com/categories/Android/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[groovy动态特性浅析：从MOP到DSL]]></title>

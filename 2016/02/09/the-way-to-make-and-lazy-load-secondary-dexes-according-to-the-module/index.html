@@ -1,0 +1,850 @@
+<!doctype html>
+<html class="theme-next   use-motion ">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,MainDex,MultiDex,SecondaryDex,build system,dex," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tomchen&fleur.wang's moving castle" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+
+
+
+
+
+
+<meta name="description" content="0x00 前言一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：
+
+maindex不会引入业务代码，可减少maindex体积
+运行时，可延迟加载业务dex，减少app启动时间
+能做一些有趣的工作，例如统计各个业务线模块启动时间
+
+本文在g">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一种按模块拆分和适机加载dex的方法">
+<meta property="og:url" content="http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/index.html">
+<meta property="og:site_name" content="tomchen&fleur.wang's moving castle">
+<meta property="og:description" content="0x00 前言一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：
+
+maindex不会引入业务代码，可减少maindex体积
+运行时，可延迟加载业务dex，减少app启动时间
+能做一些有趣的工作，例如统计各个业务线模块启动时间
+
+本文在g">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/maindex.png?imageView2/2/w/300">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/module-A.png?imageView2/2/w/320">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/MainActivity.png?imageView2/2/w/280">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/ActivityA.png?imageView2/2/w/280">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/cc.png">
+<meta property="og:updated_time" content="2016-02-09T13:23:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一种按模块拆分和适机加载dex的方法">
+<meta name="twitter:description" content="0x00 前言一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：
+
+maindex不会引入业务代码，可减少maindex体积
+运行时，可延迟加载业务dex，减少app启动时间
+能做一些有趣的工作，例如统计各个业务线模块启动时间
+
+本文在g">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: '',
+    sidebar: 'hide',
+    motion: true
+  };
+</script>
+
+  <title> 一种按模块拆分和适机加载dex的方法 | tomchen&fleur.wang's moving castle </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-71641925-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?ba6dfd96f83113651e44d745cd86aa59";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <div class="container one-column page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">tomchen&fleur.wang's moving castle</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">This dog is lazy, left nothing</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分類
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            關於
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            標籤
+          </a>
+        </li>
+      
+
+      
+      
+        <li class="menu-item menu-item-search">
+          <a href="#" class="st-search-show-outputs">
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            檢索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'R7Hs2YB8usgTLynUrELe','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div id="content" class="content">
+          
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                一种按模块拆分和适机加载dex的方法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            發表於
+            <time itemprop="dateCreated" datetime="2016-02-09T18:59:53+08:00" content="2016-02-09">
+              2016-02-09
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp; 分類於
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
+<ul>
+<li>maindex不会引入业务代码，可减少maindex体积</li>
+<li>运行时，可延迟加载业务dex，减少app启动时间</li>
+<li>能做一些有趣的工作，例如统计各个业务线模块启动时间</li>
+</ul>
+<p>本文在google multidex的基础上，通过应用<a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">multidex-maker</a>,<a href="https://github.com/JLLK/multidex-installer" target="_blank" rel="external">multidex-installer</a>和<a href="https://github.com/JLLK/multidex-hook" target="_blank" rel="external">multidex-hook</a>，实现secondary dex的按模块拆分和适机延迟加载，并在文章最后给出了一个示例app：<a href="https://github.com/JLLK/multidex-sample" target="_blank" rel="external">multidex-sample</a>。<br><a id="more"></a></p>
+<hr>
+<h1 id="0x01_multidex-maker"><a href="#0x01_multidex-maker" class="headerlink" title="0x01 multidex-maker"></a>0x01 multidex-maker</h1><p><a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">multidex-maker</a>(<a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">https://github.com/JLLK/multidex-maker</a>)用来确保每个模块的class划分到自己的secondary dex。安装multidex-maker首先需要执行<code>./install.sh</code>。这一步会先编译multidex-maker，输出dx.jar。</p>
+<p>请检查<code>~/Library/Android/sdk/platforms/android-${SDK_VERSION}/android.jar</code>中<code>SDK_VERSION</code>是否存在（默认是<code>17</code>)，编译完成后，会自动替换<code>~/Library/Android/sdk/build-tools/${BUILD_TOOL_VERSION}/lib</code>下的dx.jar，<code>BUILD_TOOL_VERSION</code>默认是<code>23.0.1</code>，如果build-tools中没有<code>23.0.1</code>请换成其他版本：</p>
+<p>install.sh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SDK_VERSION=<span class="number">17</span>			<span class="comment"># change to your version</span></span><br><span class="line"></span><br><span class="line">BUILD_TOOL_VERSION=<span class="number">23.0</span>.<span class="number">1</span>	<span class="comment"># change to your version</span></span><br></pre></td></tr></table></figure>
+<p>然后，在<code>build.gradle</code>中加上：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    afterEvaluate &#123;</span><br><span class="line">        tasks.matching &#123;</span><br><span class="line">            it.name.startsWith(<span class="string">"dex"</span>)</span><br><span class="line">        &#125;.each &#123; dx -&gt;</span><br><span class="line">            <span class="keyword">if</span> (dx.additionalParameters == <span class="literal">null</span>) &#123;</span><br><span class="line">                dx.additionalParameters = []</span><br><span class="line">            &#125;</span><br><span class="line">            dx.additionalParameters += <span class="string">"--main-dex-list=$projectDir/maindexlist.txt"</span>.toString()</span><br><span class="line">            dx.additionalParameters += <span class="string">"--secondary-dexes-list=$projectDir/secondarydexeslist.txt"</span>.toString()</span><br><span class="line">            dx.additionalParameters += <span class="string">"--minimal-main-dex"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>--secondary-dexes-list</code>是multidex-maker新加的编译参数，可以带上一个secondarydexeslist.txt文件，支持用<code>--secondary-dex-begin</code>和<code>--secondary-dex-end</code>把需要单独拆成dex的module的包名包含进来，例如示例app中的secondarydexeslist.txt：</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span>    </span><br><span class="line"></span>com/github/jllk/multidex/sample/R</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span>    </span><br><span class="line"></span>scala/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span>	</span><br><span class="line"></span>com/github/jllk/multidex/sample/a/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span></span><br><span class="line"></span>com/github/jllk/multidex/sample/b/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span></span><br><span class="line"></span>com/github/jllk/multidex/sample/c/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span><br><span class="line"></span></span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">begin</span></span><br><span class="line"></span>com/github/jllk/multidex/sample/d/</span><br><span class="line">-<span class="ruby">-secondary-dex-<span class="keyword">end</span></span></span><br></pre></td></tr></table></figure>
+<p>安装完成multidex-maker之后，在gradle build app时可以得到一个<strong>按模块拆分成多个secondary dex</strong>的app。</p>
+<hr>
+<h1 id="0x02_multidex-installer"><a href="#0x02_multidex-installer" class="headerlink" title="0x02 multidex-installer"></a>0x02 multidex-installer</h1><p>如果仅仅拆分了secondary dex，app应该还<a href="http://ct2wj.com/2015/12/22/the-way-to-solve-main-dex-capacity-exceeded-in-Android-gradle-build/" target="_blank" rel="external">不能运行</a>。一种解决方法是我们可以采用google multidex库的支持，选择在<code>Application.attachBaseContext</code>时调用<code>MultiDex.install(this)</code>。但这样会将secondary dexes一次性加载进来，失去了根据业务线的实际情况加载dex的优势。</p>
+<p><a href="https://github.com/JLLK/multidex-installer" target="_blank" rel="external">multidex-installer</a>(<a href="https://github.com/JLLK/multidex-installer" target="_blank" rel="external">https://github.com/JLLK/multidex-installer</a>)支持按dex索引来加载dex，提供了三种加载方案：<code>installAll</code>、<code>installOne</code>和<code>installRange</code>：</p>
+<p>JLLKMultiDexInstaller.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Install all dexes in sourceApk</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">installAll</span><span class="params">(Context context)</span></span><br><span class="line">   </span><br><span class="line">   <span class="comment">// Install one dex by index</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">installOne</span><span class="params">(Context context, <span class="keyword">int</span> dexIndex)</span></span><br><span class="line">   </span><br><span class="line">   <span class="comment">// Install dexes by range index</span></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">installRange</span><span class="params">(Context context, <span class="keyword">int</span> startDexIndex, <span class="keyword">int</span> endDexIndex)</span></span></span><br></pre></td></tr></table></figure>
+<p>使用multidex-installer需要在build.gradle中添加：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    compile fileTree(<span class="string">dir:</span> <span class="string">'libs'</span>, <span class="string">include:</span> [<span class="string">'*.jar'</span>])</span><br><span class="line">    compile <span class="string">"com.github.jllk:multidex-installer:0.0.4-beta@aar"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后修改<code>attachBaseContext</code>，添加几行代码，让multidex-installer工作起来：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SampleApp</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Application</span> &#123;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">attachBaseContext</span>(</span>base: <span class="type">Context</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">super</span>.attachBaseContext(base)</span><br><span class="line">    <span class="type">JLLKMultiDexInstaller</span>.installOne(<span class="keyword">this</span>, <span class="number">2</span>) <span class="comment">// for R</span></span><br><span class="line">    <span class="type">JLLKMultiDexInstaller</span>.installRange(<span class="keyword">this</span>, <span class="number">3</span>, <span class="number">4</span>) <span class="comment">// for scala</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="0x03_multidex-hook"><a href="#0x03_multidex-hook" class="headerlink" title="0x03 multidex-hook"></a>0x03 multidex-hook</h1><p>app启动时，在<code>Application.attachBaseContext</code>中加载dex也许不是最好的时机，假如用户没有使用模块A的功能，模块A对应的dex是没必要立刻加载的。更好的办法是在恰当的时机延迟加载dex，本文称为<strong>适机加载</strong>。</p>
+<p>为此，本文提出了<a href="https://github.com/JLLK/multidex-hook" target="_blank" rel="external">multidex-hook</a>(<a href="https://github.com/JLLK/multidex-hook" target="_blank" rel="external">https://github.com/JLLK/multidex-hook</a>)，通过hook本应用进程的<code>Instrumentation</code>，在<code>Instrumentation.execStartActivity</code>方法被调用时，根据所启动模块的Activity的完全限定名来获得dex索引，再用multidex-installer加载相应dex。</p>
+<p>JLLKInstrumentationProxy.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> ActivityResult <span class="title">execStartActivityProxy</span><span class="params">(Context who, Intent intent, IExecStartActivityDelegate delegate)</span> </span>&#123;</span><br><span class="line">    String className = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (intent.getComponent().getClassName() == <span class="keyword">null</span>) &#123;</span><br><span class="line">        ResolveInfo resolveInfo = getContext().getPackageManager()</span><br><span class="line">                .resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);</span><br><span class="line">        <span class="keyword">if</span> (resolveInfo != <span class="keyword">null</span>) &#123;</span><br><span class="line">            className = resolveInfo.activityInfo.name;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        className = intent.getComponent().getClassName();</span><br><span class="line">    &#125;</span><br><span class="line">    Log.d(TAG, <span class="string">"[execStartActivityProxy] "</span> + className);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Install secondary dex by index.</span></span><br><span class="line">    <span class="keyword">int</span> dexIdx = JLLKMultiDexHook.getModuleDexIdx(className);</span><br><span class="line">    <span class="keyword">if</span> (dexIdx &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        JLLKMultiDexInstaller.installOne(who, dexIdx);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> delegate.execStartActivity();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="0x04_multidex-sample"><a href="#0x04_multidex-sample" class="headerlink" title="0x04 multidex-sample"></a>0x04 multidex-sample</h1><p>本文的最后介绍示例app <a href="https://github.com/JLLK/multidex-sample" target="_blank" rel="external">multidex-sample</a>(<a href="https://github.com/JLLK/multidex-sample" target="_blank" rel="external">https://github.com/JLLK/multidex-sample</a>)，它同时用到了multidex-maker，multidex-installer和multidex-hook。构建完成后，multidex-sample输出的dex如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt; du -sh *<span class="class">.dex</span></span><br><span class="line"><span class="number">40</span>K	classes<span class="class">.dex</span></span><br><span class="line"><span class="number">4.0</span>K	classes2<span class="class">.dex</span></span><br><span class="line"><span class="number">7.0</span>M	classes3<span class="class">.dex</span></span><br><span class="line"><span class="number">1.7</span>M	classes4<span class="class">.dex</span></span><br><span class="line"><span class="number">12</span>K	classes5<span class="class">.dex</span></span><br><span class="line"><span class="number">12</span>K	classes6<span class="class">.dex</span></span><br><span class="line"><span class="number">12</span>K	classes7<span class="class">.dex</span></span><br><span class="line"><span class="number">12</span>K	classes8<span class="class">.dex</span></span><br><span class="line"><span class="number">28</span>K	classes9.dex</span><br></pre></td></tr></table></figure>
+<p>其中，maindex（图左）仅包含multidex-installer和multidex-hook以及各模块X（a,b,c）的入口SampleActivityX，模块A（图右）仅包含业务相关的class：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">maindex</th>
+<th style="text-align:center">Secondary dex: module A</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><img src="http://7xpcru.com1.z0.glb.clouddn.com/maindex.png?imageView2/2/w/300" alt=""></td>
+<td style="text-align:center"><img src="http://7xpcru.com1.z0.glb.clouddn.com/module-A.png?imageView2/2/w/320" alt=""></td>
+</tr>
+</tbody>
+</table>
+<p>以及完美的运行：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">MainActivity</th>
+<th style="text-align:center">SampleActivityA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><img src="http://7xpcru.com1.z0.glb.clouddn.com/MainActivity.png?imageView2/2/w/280" alt=""></td>
+<td style="text-align:center"><img src="http://7xpcru.com1.z0.glb.clouddn.com/ActivityA.png?imageView2/2/w/280" alt=""></td>
+</tr>
+</tbody>
+</table>
+<p>Done! ^_-</p>
+<hr>
+<h4 id="u7248_u6743_u58F0_u660E"><a href="#u7248_u6743_u58F0_u660E" class="headerlink" title="版权声明"></a>版权声明</h4><p><img src="http://7xpcru.com1.z0.glb.clouddn.com/cc.png" alt=""></p>
+<p><a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a> by <a href="http://ct2wj.com/about" target="_blank" rel="external">CHEN TAO</a> is licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">Creative Commons BY-NC-ND 4.0 International License</a>.</p>
+<p>由<a href="http://ct2wj.com/about" target="_blank" rel="external">陈涛</a>创作并维护的<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客采用<a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。</p>
+<p>本文首发于<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客（ <a href="http://ct2wj.com" target="_blank" rel="external">http://ct2wj.com</a> ），版权所有，侵权必究。</p>
+<p>本文永久链接：<a href="http://ct2wj.com/2016/02/09/one-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/" target="_blank" rel="external">http://ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag">#Android</a>
+          
+            <a href="/tags/MainDex/" rel="tag">#MainDex</a>
+          
+            <a href="/tags/MultiDex/" rel="tag">#MultiDex</a>
+          
+            <a href="/tags/SecondaryDex/" rel="tag">#SecondaryDex</a>
+          
+            <a href="/tags/build-system/" rel="tag">#build system</a>
+          
+            <a href="/tags/dex/" rel="tag">#dex</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/16/groovy-from-MOP-to-DSL/" rel="next" title="groovy动态特性浅析：从MOP到DSL">
+                <i class="fa fa-chevron-left"></i> groovy动态特性浅析：从MOP到DSL
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+        </div>
+
+        
+
+
+        
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/"
+           data-title="一种按模块拆分和适机加载dex的方法" data-url="http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/">
+      </div>
+    
+  </div>
+
+
+      </div>
+
+      
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="http://7xpcru.com1.z0.glb.clouddn.com/jllk.png" alt="tomchen" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">tomchen</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">This dog is lazy, left nothing</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-name">分類</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">標籤</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jllk" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> github
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-nd/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-nd.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00__u524D_u8A00"><span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01_multidex-maker"><span class="nav-text">0x01 multidex-maker</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02_multidex-installer"><span class="nav-text">0x02 multidex-installer</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03_multidex-hook"><span class="nav-text">0x03 multidex-hook</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04_multidex-sample"><span class="nav-text">0x04 multidex-sample</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#u7248_u6743_u58F0_u660E"><span class="nav-text">版权声明</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+      
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="icon-next-heart fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tomchen</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ct2wj"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+    
+     
+
+
+    
+  
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
+
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    motionMiddleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  <script type="text/javascript" src="/js/bootstrap.js"></script>
+
+  
+  
+
+  
+  
+
+</body>
+</html>
