@@ -4,7 +4,7 @@
   <subtitle><![CDATA[This dog is lazy, left nothing]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.ct2wj.com/"/>
-  <updated>2016-02-09T13:23:09.000Z</updated>
+  <updated>2016-02-09T13:32:52.000Z</updated>
   <id>http://www.ct2wj.com/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/"/>
     <id>http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/</id>
     <published>2016-02-09T10:59:53.000Z</published>
-    <updated>2016-02-09T13:23:09.000Z</updated>
+    <updated>2016-02-09T13:32:52.000Z</updated>
     <content type="html"><![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
 <ul>
 <li>maindex不会引入业务代码，可减少maindex体积</li>
@@ -90,7 +90,7 @@
 <p><a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a> by <a href="http://ct2wj.com/about" target="_blank" rel="external">CHEN TAO</a> is licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">Creative Commons BY-NC-ND 4.0 International License</a>.</p>
 <p>由<a href="http://ct2wj.com/about" target="_blank" rel="external">陈涛</a>创作并维护的<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客采用<a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。</p>
 <p>本文首发于<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客（ <a href="http://ct2wj.com" target="_blank" rel="external">http://ct2wj.com</a> ），版权所有，侵权必究。</p>
-<p>本文永久链接：<a href="http://ct2wj.com/2016/02/09/one-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/" target="_blank" rel="external">http://ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/</a></p>
+<p>本文永久链接：<a href="http://ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/" target="_blank" rel="external">http://ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/</a></p>
 ]]></content>
     <summary type="html">
     <![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
