@@ -325,13 +325,13 @@
 
       
         
-          <h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
+          <h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
 <ul>
 <li>maindex不会引入业务代码，可减少maindex体积</li>
 <li>运行时，可延迟加载业务dex，减少app启动时间</li>
 <li>能做一些有趣的工作，例如统计各个业务线模块启动时间</li>
 </ul>
-<p>本文在google multidex的基础上，通过应用<a href="https://github.com/JLLK/multidex-maker">multidex-maker</a>,<a href="https://github.com/JLLK/multidex-installer">multidex-installer</a>和<a href="https://github.com/JLLK/multidex-hook">multidex-hook</a>，实现secondary dex的按模块拆分和适机延迟加载，并在文章最后给出了一个示例app：<a href="https://github.com/JLLK/multidex-sample">multidex-sample</a>。<br>
+<p>本文在google multidex的基础上，通过应用<a href="https://github.com/JLLK/multidex-maker">multidex-maker</a>,<a href="https://github.com/JLLK/multidex-installer">multidex-installer</a>和<a href="https://github.com/JLLK/multidex-hook">multidex-hook</a>，实现secondary dex的按模块拆分和适机延迟加载。文章最后给出了一个示例app：<a href="https://github.com/JLLK/multidex-sample">multidex-sample</a>。<br>
           <div class="post-more-link text-center">
             <a class="btn" href="/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/#more" rel="contents">
               閱讀全文 &raquo;

@@ -4,7 +4,7 @@
   <subtitle><![CDATA[This dog is lazy, left nothing]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.ct2wj.com/"/>
-  <updated>2016-02-09T13:32:52.000Z</updated>
+  <updated>2016-02-09T13:58:10.000Z</updated>
   <id>http://www.ct2wj.com/</id>
   
   <author>
@@ -19,14 +19,14 @@
     <link href="http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/"/>
     <id>http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/</id>
     <published>2016-02-09T10:59:53.000Z</published>
-    <updated>2016-02-09T13:32:52.000Z</updated>
-    <content type="html"><![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
+    <updated>2016-02-09T13:58:10.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
 <ul>
 <li>maindex不会引入业务代码，可减少maindex体积</li>
 <li>运行时，可延迟加载业务dex，减少app启动时间</li>
 <li>能做一些有趣的工作，例如统计各个业务线模块启动时间</li>
 </ul>
-<p>本文在google multidex的基础上，通过应用<a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">multidex-maker</a>,<a href="https://github.com/JLLK/multidex-installer" target="_blank" rel="external">multidex-installer</a>和<a href="https://github.com/JLLK/multidex-hook" target="_blank" rel="external">multidex-hook</a>，实现secondary dex的按模块拆分和适机延迟加载，并在文章最后给出了一个示例app：<a href="https://github.com/JLLK/multidex-sample" target="_blank" rel="external">multidex-sample</a>。<br><a id="more"></a></p>
+<p>本文在google multidex的基础上，通过应用<a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">multidex-maker</a>,<a href="https://github.com/JLLK/multidex-installer" target="_blank" rel="external">multidex-installer</a>和<a href="https://github.com/JLLK/multidex-hook" target="_blank" rel="external">multidex-hook</a>，实现secondary dex的按模块拆分和适机延迟加载。文章最后给出了一个示例app：<a href="https://github.com/JLLK/multidex-sample" target="_blank" rel="external">multidex-sample</a>。<br><a id="more"></a></p>
 <hr>
 <h1 id="0x01_multidex-maker"><a href="#0x01_multidex-maker" class="headerlink" title="0x01 multidex-maker"></a>0x01 multidex-maker</h1><p><a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">multidex-maker</a>(<a href="https://github.com/JLLK/multidex-maker" target="_blank" rel="external">https://github.com/JLLK/multidex-maker</a>)用来确保每个模块的class划分到自己的secondary dex。安装multidex-maker首先需要执行<code>./install.sh</code>。这一步会先编译multidex-maker，输出dx.jar。</p>
 <p>请检查<code>~/Library/Android/sdk/platforms/android-${SDK_VERSION}/android.jar</code>中<code>SDK_VERSION</code>是否存在（默认是<code>17</code>)，编译完成后，会自动替换<code>~/Library/Android/sdk/build-tools/${BUILD_TOOL_VERSION}/lib</code>下的dx.jar，<code>BUILD_TOOL_VERSION</code>默认是<code>23.0.1</code>，如果build-tools中没有<code>23.0.1</code>请换成其他版本：</p>
@@ -93,13 +93,13 @@
 <p>本文永久链接：<a href="http://ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/" target="_blank" rel="external">http://ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/</a></p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该是独立的没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
+    <![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
 <ul>
 <li>maindex不会引入业务代码，可减少maindex体积</li>
 <li>运行时，可延迟加载业务dex，减少app启动时间</li>
 <li>能做一些有趣的工作，例如统计各个业务线模块启动时间</li>
 </ul>
-<p>本文在google multidex的基础上，通过应用<a href="https://github.com/JLLK/multidex-maker">multidex-maker</a>,<a href="https://github.com/JLLK/multidex-installer">multidex-installer</a>和<a href="https://github.com/JLLK/multidex-hook">multidex-hook</a>，实现secondary dex的按模块拆分和适机延迟加载，并在文章最后给出了一个示例app：<a href="https://github.com/JLLK/multidex-sample">multidex-sample</a>。<br>]]>
+<p>本文在google multidex的基础上，通过应用<a href="https://github.com/JLLK/multidex-maker">multidex-maker</a>,<a href="https://github.com/JLLK/multidex-installer">multidex-installer</a>和<a href="https://github.com/JLLK/multidex-hook">multidex-hook</a>，实现secondary dex的按模块拆分和适机延迟加载。文章最后给出了一个示例app：<a href="https://github.com/JLLK/multidex-sample">multidex-sample</a>。<br>]]>
     
     </summary>
     
