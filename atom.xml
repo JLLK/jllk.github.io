@@ -4,7 +4,7 @@
   <subtitle><![CDATA[This dog is lazy, left nothing]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://www.ct2wj.com/"/>
-  <updated>2016-02-13T01:45:43.000Z</updated>
+  <updated>2016-02-13T10:20:38.000Z</updated>
   <id>http://www.ct2wj.com/</id>
   
   <author>
@@ -15,11 +15,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[一种按模块拆分和适机加载dex的方法]]></title>
+    <title><![CDATA[一种按模块拆分dex和适机加载的方法]]></title>
     <link href="http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/"/>
     <id>http://www.ct2wj.com/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/</id>
     <published>2016-02-09T10:59:53.000Z</published>
-    <updated>2016-02-13T01:45:43.000Z</updated>
+    <updated>2016-02-13T10:20:38.000Z</updated>
     <content type="html"><![CDATA[<h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>一个功能成熟的app可能由多个业务平行的模块构成，由于业务是平行的，这些模块之间也应该没有耦合。本文希望在构建app时，每个平行业务线x对应的模块的class可以分解到dex(..x)中，这样做的好处是：</p>
 <ul>
 <li>maindex不会引入业务代码，可减少maindex体积</li>
