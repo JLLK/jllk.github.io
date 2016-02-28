@@ -1,5 +1,11 @@
 <!doctype html>
-<html class="theme-next   use-motion ">
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -32,7 +38,7 @@
 
 <link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
   <meta name="keywords" content="Hexo, NexT" />
@@ -46,7 +52,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
 
 
 
@@ -66,10 +72,16 @@
 
 
 <script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
   var CONFIG = {
-    scheme: '',
-    sidebar: 'hide',
-    motion: true
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
   };
 </script>
 
@@ -78,15 +90,6 @@
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="default">
 
-  <!--[if lte IE 8]>
-  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
-    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
-      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
-           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
-           style='margin-left:auto;margin-right:auto;display: block;'/>
-    </a>
-  </div>
-<![endif]-->
   
 
 
@@ -113,9 +116,16 @@
 
 
 
-  <div class="container one-column 
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left 
    page-home 
-">
+ ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -199,6 +209,7 @@
 
       
       
+      
         <li class="menu-item menu-item-search">
           <a href="#" class="st-search-show-outputs">
             
@@ -214,7 +225,9 @@
   
     <div class="site-search">
       
-  
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
 
 <script type="text/javascript">
   (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
@@ -236,14 +249,134 @@
 
     <main id="main" class="main">
       <div class="main-inner">
-        <div id="content" class="content">
-          
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
   <section id="posts" class="posts-expand">
 
     
 
     
     
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/02/28/shadowsocks-android-source-code-analysis/" itemprop="url">
+                  shadowsocks-android源码解析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-02-28T16:41:44+08:00" content="2016-02-28">
+              2016-02-28
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index">
+                    <span itemprop="name">network</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/02/28/shadowsocks-android-source-code-analysis/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/28/shadowsocks-android-source-code-analysis/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="0x00__u7B80_u4ECB"><a href="#0x00__u7B80_u4ECB" class="headerlink" title="0x00 简介"></a>0x00 简介</h1><p><a href="https://github.com/shadowsocks/shadowsocks-android">shadowsocks-android</a>(ss-android)是一款android上的科学上网软件，特点是无需root权限就能实现全局代理。作为一个shadowsocks重度使用者，本来想学习一下，但发现网上相关文章和资料还比较少，因此有了本篇文章，旨在分享自己对ss-android源码的一些理解。本文分析的源码基于ss-android的<a href="https://github.com/shadowsocks/shadowsocks-android/releases/tag/v2.9.11">2.9.11</a>版本。</p>
+<hr>
+<h1 id="0x01_ss-android_u8FDB_u7A0B_u6982_u8FF0"><a href="#0x01_ss-android_u8FDB_u7A0B_u6982_u8FF0" class="headerlink" title="0x01 ss-android进程概述"></a>0x01 ss-android进程概述</h1><p>本文先从整体上分析ss-android进程之间的关系，然后从每个进程角度出发，结合源码分析ss-android科学上网的实现原理。ss-android启动时默认工作在vpn模式，创建2个java进程<strong>shadowsocks</strong>，<strong>shadowsocks:vpn</strong>以及4个native进程<strong>ss-local</strong>、<strong>pdnsd</strong>、<strong>ss-tunel</strong>、<strong>tun2socks</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">u0_a124   <span class="number">14935</span> <span class="number">1857</span>  <span class="number">1058332</span> <span class="number">56560</span> SyS_epoll_ <span class="number">00000000</span> S com.github.shadowsocks:vpn</span><br><span class="line">u0_a124   <span class="number">16336</span> <span class="number">1857</span>  <span class="number">1235568</span> <span class="number">88380</span> SyS_epoll_ <span class="number">00000000</span> S com.github.shadowsocks</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">u0_a124   <span class="number">20419</span> <span class="number">14935</span> <span class="number">3376</span>   <span class="number">1136</span>  SyS_epoll_ <span class="number">00000000</span> S /data/data/com.github.shadowsocks/ss-local</span><br><span class="line">u0_a124   <span class="number">20421</span> <span class="number">14935</span> <span class="number">7688</span>   <span class="number">804</span>   <span class="keyword">do</span>_sigtime <span class="number">00000000</span> S /data/data/com.github.shadowsocks/pdnsd</span><br><span class="line">u0_a124   <span class="number">20425</span> <span class="number">14935</span> <span class="number">3112</span>   <span class="number">940</span>   SyS_epoll_ <span class="number">00000000</span> S /data/data/com.github.shadowsocks/ss-tunnel</span><br><span class="line">u0_a124   <span class="number">20431</span> <span class="number">14935</span> <span class="number">3812</span>   <span class="number">1420</span>  SyS_epoll_ <span class="number">00000000</span> S /data/data/com.github.shadowsocks/tun2socks</span><br></pre></td></tr></table></figure>
+<p>ss-android进程启动流程以及进程间通信关系图：</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">shadowsocks =&#62; shadowsocks:vpn =&#62; ss-local =&#62; pdnsd =&#62; ss-tunnel =&#62; tun2socks</span><br></pre></td></tr></table></figure>
+<p><img src="http://7xpcru.com1.z0.glb.clouddn.com/ProcessOfShadowsocks.jpg" alt=""></p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/02/28/shadowsocks-android-source-code-analysis/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
 
     
       
@@ -277,7 +410,10 @@
 
         <div class="post-meta">
           <span class="post-time">
-            Posted on
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2016-02-09T18:59:53+08:00" content="2016-02-09">
               2016-02-09
             </time>
@@ -285,7 +421,11 @@
 
           
             <span class="post-category" >
-              &nbsp; | &nbsp; In
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -313,12 +453,14 @@
 
           
 
+          
+          
         </div>
       </header>
     
 
 
-    <div class="post-body">
+    <div class="post-body" itemprop="articleBody">
 
       
       
@@ -386,7 +528,10 @@
 
         <div class="post-meta">
           <span class="post-time">
-            Posted on
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2016-01-16T21:04:21+08:00" content="2016-01-16">
               2016-01-16
             </time>
@@ -394,7 +539,11 @@
 
           
             <span class="post-category" >
-              &nbsp; | &nbsp; In
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/groovy/" itemprop="url" rel="index">
@@ -422,12 +571,14 @@
 
           
 
+          
+          
         </div>
       </header>
     
 
 
-    <div class="post-body">
+    <div class="post-body" itemprop="articleBody">
 
       
       
@@ -492,7 +643,10 @@
 
         <div class="post-meta">
           <span class="post-time">
-            Posted on
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2015-12-31T17:40:37+08:00" content="2015-12-31">
               2015-12-31
             </time>
@@ -500,7 +654,11 @@
 
           
             <span class="post-category" >
-              &nbsp; | &nbsp; In
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -528,12 +686,14 @@
 
           
 
+          
+          
         </div>
       </header>
     
 
 
-    <div class="post-body">
+    <div class="post-body" itemprop="articleBody">
 
       
       
@@ -597,7 +757,10 @@
 
         <div class="post-meta">
           <span class="post-time">
-            Posted on
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2015-12-24T11:53:13+08:00" content="2015-12-24">
               2015-12-24
             </time>
@@ -605,7 +768,11 @@
 
           
             <span class="post-category" >
-              &nbsp; | &nbsp; In
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -633,12 +800,14 @@
 
           
 
+          
+          
         </div>
       </header>
     
 
 
-    <div class="post-body">
+    <div class="post-body" itemprop="articleBody">
 
       
       
@@ -646,9 +815,9 @@
       
         
           <h1 id="0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex"><a href="#0x00__u4E3A_u4EC0_u4E48_u9700_u8981MultiDex" class="headerlink" title="0x00 为什么需要MultiDex"></a>0x00 为什么需要MultiDex</h1><p>如果你是一名android开发者，随着app功能复杂度的增加，代码量的增多和库的不断引入，你迟早会在5.0以下的某款设备上遇到：</p>
-<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Conversion <span class="keyword">to</span> Dalvik format failed:</span><br><span class="line">Unable <span class="keyword">to</span> execute dex: <span class="function"><span class="keyword">method</span> <span class="title">ID</span> <span class="title">not</span> <span class="title">in</span> [0, 0<span class="title">xffff</span>]:</span> <span class="number">65536</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight oxygene"><table><tr><td class="code"><pre><span class="line">Conversion <span class="keyword">to</span> Dalvik format failed:</span><br><span class="line">Unable <span class="keyword">to</span> execute dex: <span class="function"><span class="keyword">method</span> <span class="title">ID</span> <span class="title">not</span> <span class="title">in</span> [0, 0<span class="title">xffff</span>]:</span> <span class="number">65536</span></span><br></pre></td></tr></table></figure>
 <p>或者</p>
-<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">trouble writing outpu<span class="variable">t:</span></span><br><span class="line">Too many field reference<span class="variable">s:</span> <span class="number">131000</span>; <span class="built_in">max</span> <span class="keyword">is</span> <span class="number">65536</span>.</span><br><span class="line">You may <span class="keyword">try</span> using --multi-dex option.</span><br></pre></td></tr></table></figure>
+<figure class="highlight vim"><table><tr><td class="code"><pre><span class="line">trouble writing outpu<span class="variable">t:</span></span><br><span class="line">Too many field reference<span class="variable">s:</span> <span class="number">131000</span>; <span class="built_in">max</span> <span class="keyword">is</span> <span class="number">65536</span>.</span><br><span class="line">You may <span class="keyword">try</span> using --multi-dex option.</span><br></pre></td></tr></table></figure>
 <p>这说明你的app的main dex方法数已经超过<code>65535</code>，如果打算继续兼容5.0以下手机，你可以采用google提供的<a href="https://developer.android.com/intl/zh-cn/tools/building/multidex.html">MultiDex方案</a>，但main dex方法数为什么不能超过65535呢？<br>
           <div class="post-more-link text-center">
             <a class="btn" href="/2015/12/24/android-multidex-source-code-analysis/#more" rel="contents">
@@ -704,7 +873,10 @@
 
         <div class="post-meta">
           <span class="post-time">
-            Posted on
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2015-12-22T17:53:44+08:00" content="2015-12-22">
               2015-12-22
             </time>
@@ -725,24 +897,24 @@
 
           
 
+          
+          
         </div>
       </header>
     
 
 
-    <div class="post-body">
+    <div class="post-body" itemprop="articleBody">
 
       
       
 
       
         
-          <span itemprop="articleBody">
-            
-              <p><img src="http://7xpcru.com1.z0.glb.clouddn.com/Moving-Castle.jpg" alt=""></p>
+          
+            <p><img src="http://7xpcru.com1.z0.glb.clouddn.com/Moving-Castle.jpg" alt=""></p>
 
-            
-          </span>
+          
         
       
     </div>
@@ -792,7 +964,10 @@
 
         <div class="post-meta">
           <span class="post-time">
-            Posted on
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2015-12-22T11:33:07+08:00" content="2015-12-22">
               2015-12-22
             </time>
@@ -800,7 +975,11 @@
 
           
             <span class="post-category" >
-              &nbsp; | &nbsp; In
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -828,12 +1007,14 @@
 
           
 
+          
+          
         </div>
       </header>
     
 
 
-    <div class="post-body">
+    <div class="post-body" itemprop="articleBody">
 
       
       
@@ -872,17 +1053,15 @@
   
 
 
+          </div>
+          
+
+
+          
+
         </div>
-
         
-
-
-        
-
-      </div>
-
-      
-        
+          
   
   <div class="sidebar-toggle">
     <div class="sidebar-toggle-line-wrap">
@@ -901,31 +1080,37 @@
 
       <section class="site-overview sidebar-panel  sidebar-panel-active ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" src="http://7xpcru.com1.z0.glb.clouddn.com/jllk.png" alt="tomchen" itemprop="image"/>
+          <img class="site-author-image" itemprop="image"
+               src="http://7xpcru.com1.z0.glb.clouddn.com/jllk.png"
+               alt="tomchen" />
           <p class="site-author-name" itemprop="name">tomchen</p>
+          <p class="site-description motion-element" itemprop="description">This dog is lazy, left nothing</p>
         </div>
-        <p class="site-description motion-element" itemprop="description">This dog is lazy, left nothing</p>
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
-
-          <div class="site-state-item site-state-categories">
-            <a href="/categories">
-              <span class="site-state-item-count">2</span>
-              <span class="site-state-item-name">categories</span>
+          
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">categories</span>
               </a>
-          </div>
+            </div>
+          
 
-          <div class="site-state-item site-state-tags">
-            <a href="/tags">
-              <span class="site-state-item-count">13</span>
-              <span class="site-state-item-name">tags</span>
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">tags</span>
               </a>
-          </div>
+            </div>
+          
 
         </nav>
 
@@ -973,7 +1158,8 @@
   </aside>
 
 
-      
+        
+      </div>
     </main>
 
     <footer id="footer" class="footer">
@@ -983,7 +1169,7 @@
   &copy; 
   <span itemprop="copyrightYear">2016</span>
   <span class="with-love">
-    <i class="icon-next-heart fa fa-heart"></i>
+    <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">tomchen</span>
 </div>
@@ -995,7 +1181,7 @@
 <div class="theme-info">
   Theme -
   <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT
+    NexT.Muse
   </a>
 </div>
 
@@ -1007,13 +1193,48 @@
     <div class="back-to-top"></div>
   </div>
 
+  
+
+
+  
+
+
+
   <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
 
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
   
   
 
   
-    
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
 
   
     
@@ -1031,37 +1252,21 @@
       || document.getElementsByTagName('body')[0]).appendChild(ds);
     })();
   </script>
-    
-     
 
-
+  
     
   
 
-  
-  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
-  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
 
 
-  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
-  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
-<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
 
-<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
-
-
-  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-
-  <script type="text/javascript" src="/js/bootstrap.js"></script>
 
   
   
 
   
   
+
 
 </body>
 </html>

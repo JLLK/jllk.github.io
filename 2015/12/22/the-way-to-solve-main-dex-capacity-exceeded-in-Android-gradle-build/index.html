@@ -1,5 +1,11 @@
 <!doctype html>
-<html class="theme-next   use-motion ">
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -32,7 +38,7 @@
 
 <link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
   <meta name="keywords" content="Android,MainDex,MultiDex,build,gradle," />
@@ -46,7 +52,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
 
 
 
@@ -64,7 +70,7 @@
 <meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/printArgs.jpg">
 <meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/maindex_output.png?imageView2/2/w/150">
 <meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/cc.png">
-<meta property="og:updated_time" content="2016-02-15T03:09:41.000Z">
+<meta property="og:updated_time" content="2016-02-15T03:14:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MultiDex中出现的main dex capacity exceeded解决之道">
 <meta name="twitter:description" content="0x00 前言
@@ -73,10 +79,16 @@
 
 
 <script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
   var CONFIG = {
-    scheme: '',
-    sidebar: 'hide',
-    motion: true
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
   };
 </script>
 
@@ -85,15 +97,6 @@
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="default">
 
-  <!--[if lte IE 8]>
-  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
-    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
-      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
-           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
-           style='margin-left:auto;margin-right:auto;display: block;'/>
-    </a>
-  </div>
-<![endif]-->
   
 
 
@@ -120,7 +123,14 @@
 
 
 
-  <div class="container one-column page-post-detail">
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -204,6 +214,7 @@
 
       
       
+      
         <li class="menu-item menu-item-search">
           <a href="#" class="st-search-show-outputs">
             
@@ -219,7 +230,9 @@
   
     <div class="site-search">
       
-  
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
 
 <script type="text/javascript">
   (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
@@ -241,8 +254,9 @@
 
     <main id="main" class="main">
       <div class="main-inner">
-        <div id="content" class="content">
-          
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
 
   <div id="posts" class="posts-expand">
     
@@ -273,7 +287,10 @@
 
         <div class="post-meta">
           <span class="post-time">
-            Posted on
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2015-12-22T11:33:07+08:00" content="2015-12-22">
               2015-12-22
             </time>
@@ -281,7 +298,11 @@
 
           
             <span class="post-category" >
-              &nbsp; | &nbsp; In
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
@@ -309,67 +330,69 @@
 
           
 
+          
+          
         </div>
       </header>
     
 
 
-    <div class="post-body">
+    <div class="post-body" itemprop="articleBody">
 
       
       
 
       
-        <span itemprop="articleBody"><h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><blockquote>
+        <h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><blockquote>
 <p>随着业务的日益壮大，在集成构建实践中发现，dalvik上的MultiDex拆包频繁出现main dex capacity exceeded问题导致编译失败，对app的年末上线构成了严峻挑战。本文通过控制maindexlist中class的数量，达到减少MainDex体积，避免exceeded的目的。</p>
 </blockquote>
 <a id="more"></a>
 <hr>
-<h1 id="0x01__u4E3A_u4EC0_u4E48_u4F1Amain_dex_capacity_exceeded"><a href="#0x01__u4E3A_u4EC0_u4E48_u4F1Amain_dex_capacity_exceeded" class="headerlink" title="0x01 为什么会main dex capacity exceeded"></a>0x01 为什么会main dex capacity exceeded</h1><p>在入口类<code>com.android.dx.command.dexer.Main</code>中，<br><code>processOne</code>会去调用<code>processClass</code>，发现main dex的方法数超65535，会通过<code>createDexFile</code>创建一个新的Byte[]对象放入dexOutputArrays。<code>processAllFiles</code>遇到<code>dexOutputArrays.size</code> &gt; 0，会抛<code>DexException</code>，告诉我们”Too many classes in maindexlixt, main dex capacity exceeded”。</p>
+<h1 id="0x01__u4E3A_u4EC0_u4E48_u4F1Amain_dex_capacity_exceeded"><a href="#0x01__u4E3A_u4EC0_u4E48_u4F1Amain_dex_capacity_exceeded" class="headerlink" title="0x01 为什么会main dex capacity exceeded"></a>0x01 为什么会main dex capacity exceeded</h1><p>在入口类<code>com.android.dx.command.dexer.Main</code>中，<br><code>processOne</code>会去调用<code>processClass</code>，一旦发现main dex的方法数超65535，会通过<code>createDexFile</code>创建一个新的Byte[]对象放入dexOutputArrays。<code>processAllFiles</code>遇到<code>dexOutputArrays.size</code> &gt; 0就会抛<code>DexException</code>，告诉我们”Too many classes in maindexlixt, main dex capacity exceeded”。</p>
 <p>dalvik/dx/src/com/android/dx/command/dexer/Main.java</p>
 <p><code>processAllFiles</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (args.mainDexListFile != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// with --main-dex-list</span></span><br><span class="line">	...</span><br><span class="line"><span class="comment">// forced in main dex</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; fileNames.length; i++) &#123;</span><br><span class="line">                processOne(fileNames[i], mainPassFilter);</span><br><span class="line">            &#125;</span><br><span class="line">	</span><br><span class="line">            <span class="keyword">if</span> (dexOutputArrays.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> DexException(<span class="string">"Too many classes in "</span> + Arguments.MAIN_DEX_LIST_OPTION</span><br><span class="line">                        + <span class="string">", main dex capacity exceeded"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">	...</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">        <span class="keyword">if</span> (args.mainDexListFile != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// with --main-dex-list</span></span><br><span class="line">	...</span><br><span class="line"><span class="comment">// forced in main dex</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; fileNames.length; i++) &#123;</span><br><span class="line">                processOne(fileNames[i], mainPassFilter);</span><br><span class="line">            &#125;</span><br><span class="line">	</span><br><span class="line">            <span class="keyword">if</span> (dexOutputArrays.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> DexException(<span class="string">"Too many classes in "</span> + Arguments.MAIN_DEX_LIST_OPTION</span><br><span class="line">                        + <span class="string">", main dex capacity exceeded"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">	...</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
 <p><code>processClass</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">processClass</span><span class="params">(String name, <span class="keyword">byte</span>[] bytes)</span> </span>&#123;</span><br><span class="line">...</span><br><span class="line">      <span class="keyword">int</span> numMethodIds = outputDex.getMethodIds().items().size();</span><br><span class="line">      <span class="keyword">int</span> numFieldIds = outputDex.getFieldIds().items().size();</span><br><span class="line">      <span class="keyword">int</span> constantPoolSize = cf.getConstantPool().size();</span><br><span class="line">      <span class="keyword">int</span> maxMethodIdsInDex = numMethodIds + constantPoolSize + cf.getMethods().size() +</span><br><span class="line">              MAX_METHOD_ADDED_DURING_DEX_CREATION;</span><br><span class="line">      <span class="keyword">int</span> maxFieldIdsInDex = numFieldIds + constantPoolSize + cf.getFields().size() +</span><br><span class="line">              MAX_FIELD_ADDED_DURING_DEX_CREATION;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (args.multiDex</span><br><span class="line">          &amp;&amp; (outputDex.getClassDefs().items().size() &gt; <span class="number">0</span>)</span><br><span class="line">          &amp;&amp; ((maxMethodIdsInDex &gt; args.maxNumberOfIdxPerDex) ||</span><br><span class="line">              (maxFieldIdsInDex &gt; args.maxNumberOfIdxPerDex))) &#123;</span><br><span class="line">          DexFile completeDex = outputDex;</span><br><span class="line">          createDexFile();</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">processClass</span><span class="params">(String name, <span class="keyword">byte</span>[] bytes)</span> </span>&#123;</span><br><span class="line">...</span><br><span class="line">      <span class="keyword">int</span> numMethodIds = outputDex.getMethodIds().items().size();</span><br><span class="line">      <span class="keyword">int</span> numFieldIds = outputDex.getFieldIds().items().size();</span><br><span class="line">      <span class="keyword">int</span> constantPoolSize = cf.getConstantPool().size();</span><br><span class="line">      <span class="keyword">int</span> maxMethodIdsInDex = numMethodIds + constantPoolSize + cf.getMethods().size() +</span><br><span class="line">              MAX_METHOD_ADDED_DURING_DEX_CREATION;</span><br><span class="line">      <span class="keyword">int</span> maxFieldIdsInDex = numFieldIds + constantPoolSize + cf.getFields().size() +</span><br><span class="line">              MAX_FIELD_ADDED_DURING_DEX_CREATION;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (args.multiDex</span><br><span class="line">          &amp;&amp; (outputDex.getClassDefs().items().size() &gt; <span class="number">0</span>)</span><br><span class="line">          &amp;&amp; ((maxMethodIdsInDex &gt; args.maxNumberOfIdxPerDex) ||</span><br><span class="line">              (maxFieldIdsInDex &gt; args.maxNumberOfIdxPerDex))) &#123;</span><br><span class="line">          DexFile completeDex = outputDex;</span><br><span class="line">          createDexFile();</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
 <hr>
 <h1 id="0x02__u600E_u4E48_u907F_u514D"><a href="#0x02__u600E_u4E48_u907F_u514D" class="headerlink" title="0x02 怎么避免"></a>0x02 怎么避免</h1><p>怎么才能避免maindex方法数超65535呢？ 关键在控制好<strong>maindexlist.txt中类的数量</strong>。</p>
 <hr>
 <h1 id="0x03_maindexlist-txt_u7684_u751F_u6210"><a href="#0x03_maindexlist-txt_u7684_u751F_u6210" class="headerlink" title="0x03 maindexlist.txt的生成"></a>0x03 maindexlist.txt的生成</h1><p>android gradle plugin中，有一个类专门负责创建maindexlist.txt，叫做<code>CreateMainDexList</code>，源码位于：</p>
 <p>tools/base/build-system/gradle-core/src/main/groovy/com/android/build/gradle/internal/tasks/multidex/CreateMainDexList.groovy</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="annotation">@TaskAction</span></span><br><span class="line"><span class="typename">void</span> output() &#123;</span><br><span class="line">    <span class="keyword">if</span> (getAllClassesJarFile() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"No input file"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// manifest components plus immediate dependencies must be in the main dex.</span></span><br><span class="line">    File _allClassesJarFile = getAllClassesJarFile()</span><br><span class="line">    Set&lt;String&gt; mainDexClasses = callDx(_allClassesJarFile, getComponentsJarFile())</span><br></pre></td></tr></table></figure>
-<p><code>callDx</code>最终调用<code>AndroidBuilder.createMainDexList</code>，实际是通过开启后台进程执行<code>ClassReferenceListBuilder.main</code>(5.0之前叫<code>MainDexListBuilder</code>)来分析类的依赖关系，生成maindexlist.txt。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">...</span><br><span class="line">    ZipFile jarOfRoots;</span><br><span class="line">    jarOfRoots = <span class="keyword">new</span> ZipFile(args[<span class="number">0</span>]);</span><br><span class="line">...</span><br><span class="line">    Path path = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        path = <span class="keyword">new</span> Path(args[<span class="number">1</span>]);</span><br><span class="line">        ClassReferenceListBuilder builder = <span class="keyword">new</span> ClassReferenceListBuilder(path);</span><br><span class="line">        builder.addRoots(jarOfRoots);</span><br><span class="line">        printList(builder.toKeep);</span><br><span class="line">        ...</span><br></pre></td></tr></table></figure>
-<p>为了确定<code>ClassReferenceListBuilder.main</code>的输入参数，本文用<a href="http://jboss-javassist.github.io/javassist/" target="_blank" rel="external">javassist.jar</a>来运行时改写ClassReferenceListBuilder.class文件。在main方法第一行加上<code>System.err.println（java.util.Arrays.toString(args))</code>，目的是把标准错误输出流打印到终端。另外保险起见，通过PrintWriter同时把参数输出到本地文件log.txt。</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line"><span class="annotation">@TaskAction</span></span><br><span class="line"><span class="typename">void</span> output() &#123;</span><br><span class="line">    <span class="keyword">if</span> (getAllClassesJarFile() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"No input file"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// manifest components plus immediate dependencies must be in the main dex.</span></span><br><span class="line">    File _allClassesJarFile = getAllClassesJarFile()</span><br><span class="line">    Set&lt;String&gt; mainDexClasses = callDx(_allClassesJarFile, getComponentsJarFile())</span><br></pre></td></tr></table></figure>
+<p><code>callDx</code>最终调用<code>AndroidBuilder.createMainDexList</code>，实际是通过开启后台进程执行<code>ClassReferenceListBuilder.main</code>(5.0之前叫<code>MainDexListBuilder</code>)去分析类的依赖关系，生成一个maindexlist.txt。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">...</span><br><span class="line">    ZipFile jarOfRoots;</span><br><span class="line">    jarOfRoots = <span class="keyword">new</span> ZipFile(args[<span class="number">0</span>]);</span><br><span class="line">...</span><br><span class="line">    Path path = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        path = <span class="keyword">new</span> Path(args[<span class="number">1</span>]);</span><br><span class="line">        ClassReferenceListBuilder builder = <span class="keyword">new</span> ClassReferenceListBuilder(path);</span><br><span class="line">        builder.addRoots(jarOfRoots);</span><br><span class="line">        printList(builder.toKeep);</span><br><span class="line">        ...</span><br></pre></td></tr></table></figure>
+<p>为了确定<code>ClassReferenceListBuilder.main</code>输入参数，用<a href="http://jboss-javassist.github.io/javassist/" target="_blank" rel="external">javassist.jar</a>来运行时改写ClassReferenceListBuilder.class文件。在main方法第一行加上<code>System.err.println（java.util.Arrays.toString(args))</code>，目的是把标准错误输出流打印到终端。另外保险起见，通过PrintWriter同时把参数输出到本地文件log.txt。</p>
 <p><img src="http://7xpcru.com1.z0.glb.clouddn.com/printArgs.jpg" alt=""></p>
 <p>修改后发现，gradle build进程的标准错误输出流没打印出来，很可能被重定向了，不过本地log.txt记录下了参数信息：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[[省略...]/release/componentClasses.jar, [省略...]/release/classes.jar]</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">[[省略...]/release/componentClasses.jar, [省略...]/release/classes.jar]</span><br></pre></td></tr></table></figure>
 <p>可见arg[0]是componentClasses.jar， arg[1]是app完整的classes.jar。</p>
 <p><code>ClassReferenceListBuilder.addRoots</code>通过读文件遍历componentClasses.jar的每个entry，再调用<code>addDependencies</code>分析这个类的依赖关系：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addRoots</span><span class="params">(ZipFile jarOfRoots)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">...	</span><br><span class="line">      <span class="keyword">for</span> (Enumeration&lt;? extends ZipEntry&gt; entries = jarOfRoots.entries();</span><br><span class="line">              entries.hasMoreElements();) &#123;</span><br><span class="line">          ZipEntry entry = entries.nextElement();</span><br><span class="line">          String name = entry.getName();</span><br><span class="line">          <span class="keyword">if</span> (name.endsWith(CLASS_EXTENSION)) &#123;</span><br><span class="line">              DirectClassFile classFile;</span><br><span class="line">			...</span><br><span class="line">                  classFile = path.getClass(name);</span><br><span class="line">			...</span><br><span class="line">              addDependencies(classFile.getConstantPool());</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addRoots</span><span class="params">(ZipFile jarOfRoots)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">...	</span><br><span class="line">      <span class="keyword">for</span> (Enumeration&lt;? extends ZipEntry&gt; entries = jarOfRoots.entries();</span><br><span class="line">              entries.hasMoreElements();) &#123;</span><br><span class="line">          ZipEntry entry = entries.nextElement();</span><br><span class="line">          String name = entry.getName();</span><br><span class="line">          <span class="keyword">if</span> (name.endsWith(CLASS_EXTENSION)) &#123;</span><br><span class="line">              DirectClassFile classFile;</span><br><span class="line">			...</span><br><span class="line">                  classFile = path.getClass(name);</span><br><span class="line">			...</span><br><span class="line">              addDependencies(classFile.getConstantPool());</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 <p><code>addDependencies</code>从ConstantPool得到import类，调用<code>addClassWithHierachy</code>继续分析继承关系（其实也可以通过javap -verbose先反汇编，再分析匹配”= class”的字符串来获取，具体可以参考本文的<a href="https://github.com/JLLK/ClassDependenceAnalyser" target="_blank" rel="external">依赖分析工具</a>）</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addDependencies</span><span class="params">(ConstantPool pool)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (Constant constant : pool.getEntries()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (constant <span class="keyword">instanceof</span> CstType) &#123;</span><br><span class="line">            Type type = ((CstType) constant).getClassType();</span><br><span class="line">            String descriptor = type.getDescriptor();</span><br><span class="line">            <span class="keyword">if</span> (descriptor.endsWith(<span class="string">";"</span>)) &#123;</span><br><span class="line">                <span class="keyword">int</span> lastBrace = descriptor.lastIndexOf(<span class="string">'['</span>);</span><br><span class="line">                <span class="keyword">if</span> (lastBrace &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                    addClassWithHierachy(descriptor.substring(<span class="number">1</span>, descriptor.length()-<span class="number">1</span>));</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">assert</span> descriptor.length() &gt; lastBrace + <span class="number">3</span></span><br><span class="line">                    &amp;&amp; descriptor.charAt(lastBrace + <span class="number">1</span>) == <span class="string">'L'</span>;</span><br><span class="line">                    addClassWithHierachy(descriptor.substring(lastBrace + <span class="number">2</span>,</span><br><span class="line">                            descriptor.length() - <span class="number">1</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addDependencies</span><span class="params">(ConstantPool pool)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (Constant constant : pool.getEntries()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (constant <span class="keyword">instanceof</span> CstType) &#123;</span><br><span class="line">            Type type = ((CstType) constant).getClassType();</span><br><span class="line">            String descriptor = type.getDescriptor();</span><br><span class="line">            <span class="keyword">if</span> (descriptor.endsWith(<span class="string">";"</span>)) &#123;</span><br><span class="line">                <span class="keyword">int</span> lastBrace = descriptor.lastIndexOf(<span class="string">'['</span>);</span><br><span class="line">                <span class="keyword">if</span> (lastBrace &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                    addClassWithHierachy(descriptor.substring(<span class="number">1</span>, descriptor.length()-<span class="number">1</span>));</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">assert</span> descriptor.length() &gt; lastBrace + <span class="number">3</span></span><br><span class="line">                    &amp;&amp; descriptor.charAt(lastBrace + <span class="number">1</span>) == <span class="string">'L'</span>;</span><br><span class="line">                    addClassWithHierachy(descriptor.substring(lastBrace + <span class="number">2</span>,</span><br><span class="line">                            descriptor.length() - <span class="number">1</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>依赖关系分析结束后，输出maindexlist.txt，这里标准输出已经重定向到了maindexlist.txt。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printList</span><span class="params">(Set&lt;String&gt; toKeep)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (String classDescriptor : toKeep) &#123;</span><br><span class="line">        System.out.print(classDescriptor);</span><br><span class="line">        System.out.println(CLASS_EXTENSION);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printList</span><span class="params">(Set&lt;String&gt; toKeep)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (String classDescriptor : toKeep) &#123;</span><br><span class="line">        System.out.print(classDescriptor);</span><br><span class="line">        System.out.println(CLASS_EXTENSION);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <hr>
 <h1 id="0x04_componentClasses-jar_u7684_u6765_u6E90"><a href="#0x04_componentClasses-jar_u7684_u6765_u6E90" class="headerlink" title="0x04 componentClasses.jar的来源"></a>0x04 componentClasses.jar的来源</h1><p>经过前面的分析，其实可以看出componentClasses.jar最终决定了maindexlist.txt的大小。</p>
 <p>而componentClasses.jar是proguardComponentsTask根据manifest_keep.txt从allclasses.jar中抽取生成的，manifest_keep.txt内容如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">app</span>.<span class="title">XXXXApplication</span> </span>&#123;</span><br><span class="line">   &lt;init&gt;();</span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">attachBaseContext</span><span class="params">(android.content.Context)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">splash</span>.<span class="title">XXXXActivity</span> </span>&#123; &lt;init&gt;(); &#125;</span><br><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">app</span>.<span class="title">MainActivity</span> </span>&#123; &lt;init&gt;(); &#125;</span><br><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">login</span>.<span class="title">xxxx</span>.<span class="title">LoginActivity</span> </span>&#123; &lt;init&gt;(); &#125;</span><br><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">sidebar</span>.<span class="title">account</span>.<span class="title">XXAccountActivity</span> </span>&#123; &lt;init&gt;(); &#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">app</span>.<span class="title">XXXXApplication</span> </span>&#123;</span><br><span class="line">   &lt;init&gt;();</span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">attachBaseContext</span><span class="params">(android.content.Context)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">splash</span>.<span class="title">XXXXActivity</span> </span>&#123; &lt;init&gt;(); &#125;</span><br><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">app</span>.<span class="title">MainActivity</span> </span>&#123; &lt;init&gt;(); &#125;</span><br><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">login</span>.<span class="title">xxxx</span>.<span class="title">LoginActivity</span> </span>&#123; &lt;init&gt;(); &#125;</span><br><span class="line">-keep <span class="class"><span class="keyword">class</span> <span class="title">com</span>.<span class="title">xxxx</span>.<span class="title">sdk</span>.<span class="title">sidebar</span>.<span class="title">account</span>.<span class="title">XXAccountActivity</span> </span>&#123; &lt;init&gt;(); &#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 <p>那么manifest_keep.txt由谁生成的呢？ </p>
 <p>其实是<code>CreateManifestKeepList</code>解析AndroidManifest.xml文件得到的，可以找到：</p>
 <p>./tools/base/build-system/gradle-core/src/main/groovy/com/android/build/gradle/internal/tasks/multidex/CreateManifestKeepList.groovy</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-keep public <span class="class"><span class="keyword">class</span> <span class="title">*</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">android</span>.<span class="title">app</span>.<span class="title">backup</span>.<span class="title">BackupAgent</span> &#123;</span></span><br><span class="line">    &lt;init&gt;();</span><br><span class="line">&#125;</span><br><span class="line">-keep public <span class="class"><span class="keyword">class</span> <span class="title">*</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">java</span>.<span class="title">lang</span>.<span class="title">annotation</span>.<span class="title">Annotation</span> &#123;</span></span><br><span class="line">    *;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">   <span class="annotation">@TaskAction</span></span><br><span class="line">   <span class="typename">void</span> generateKeepListFromManifest() &#123;</span><br><span class="line">       SAXParser parser = SAXParserFactory.newInstance().newSAXParser()</span><br><span class="line"></span><br><span class="line">       Writer out = <span class="keyword">new</span> BufferedWriter(<span class="keyword">new</span> FileWriter(getOutputFile()))</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           parser.parse(getManifest(), <span class="keyword">new</span> ManifestHandler(out))</span><br><span class="line">           out.write(</span><br><span class="line"><span class="string">"""-keep public class * extends android.app.backup.BackupAgent &#123;</span><br><span class="line">   &lt;init&gt;();</span><br><span class="line">&#125;</span><br><span class="line">-keep public class * extends java.lang.annotation.Annotation &#123;</span><br><span class="line">   *;</span><br><span class="line">&#125;</span><br><span class="line">"""</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line">-keep public <span class="class"><span class="keyword">class</span> <span class="title">*</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">android</span>.<span class="title">app</span>.<span class="title">backup</span>.<span class="title">BackupAgent</span> &#123;</span></span><br><span class="line">    &lt;init&gt;();</span><br><span class="line">&#125;</span><br><span class="line">-keep public <span class="class"><span class="keyword">class</span> <span class="title">*</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">java</span>.<span class="title">lang</span>.<span class="title">annotation</span>.<span class="title">Annotation</span> &#123;</span></span><br><span class="line">    *;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">   <span class="annotation">@TaskAction</span></span><br><span class="line">   <span class="typename">void</span> generateKeepListFromManifest() &#123;</span><br><span class="line">       SAXParser parser = SAXParserFactory.newInstance().newSAXParser()</span><br><span class="line"></span><br><span class="line">       Writer out = <span class="keyword">new</span> BufferedWriter(<span class="keyword">new</span> FileWriter(getOutputFile()))</span><br><span class="line">       <span class="keyword">try</span> &#123;</span><br><span class="line">           parser.parse(getManifest(), <span class="keyword">new</span> ManifestHandler(out))</span><br><span class="line">           out.write(</span><br><span class="line"><span class="string">"""-keep public class * extends android.app.backup.BackupAgent &#123;</span><br><span class="line">   &lt;init&gt;();</span><br><span class="line">&#125;</span><br><span class="line">-keep public class * extends java.lang.annotation.Annotation &#123;</span><br><span class="line">   *;</span><br><span class="line">&#125;</span><br><span class="line">"""</span>)</span><br></pre></td></tr></table></figure>
 <p>上面<code>getOutputFile</code>返回的就是manifest_keep.txt，<code>CreateManifestKeepList</code>私有内部类<code>ManifestHandler</code>用<code>CreateManifestKeepList.KEEP_SPECS[qName]</code>决定哪些类需要放入manifest_keep.txt。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ManifestHandler</span> <span class="keyword">extends</span> <span class="title">DefaultHandler</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">startElement</span><span class="params">(String uri, String localName, String qName, Attributes attr)</span> </span>&#123;</span><br><span class="line">        String keepSpec = CreateManifestKeepList.KEEP_SPECS[qName]</span><br><span class="line">        <span class="keyword">if</span> (keepSpec) &#123;</span><br><span class="line">            <span class="keyword">boolean</span> keepIt = <span class="function"><span class="keyword">true</span></span><br><span class="line">            <span class="title">if</span> <span class="params">(CreateManifestKeepList.<span class="keyword">this</span>.filter)</span> </span>&#123;</span><br><span class="line">                Map&lt;String, String&gt; attrMap = [:]</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; attr.getLength(); i++) &#123;</span><br><span class="line">                    attrMap[attr.getQName(i)] = attr.getValue(i)</span><br><span class="line">                &#125;</span><br><span class="line">                keepIt = CreateManifestKeepList.<span class="keyword">this</span>.filter(qName, attrMap)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (keepIt) &#123;</span><br><span class="line">                String nameValue = attr.getValue(<span class="string">'android:name'</span>)</span><br><span class="line">                <span class="keyword">if</span> (nameValue != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    out.write((String) <span class="string">"-keep class $&#123;nameValue&#125; $keepSpec\n"</span>)</span><br><span class="line">                &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ManifestHandler</span> <span class="keyword">extends</span> <span class="title">DefaultHandler</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">startElement</span><span class="params">(String uri, String localName, String qName, Attributes attr)</span> </span>&#123;</span><br><span class="line">        String keepSpec = CreateManifestKeepList.KEEP_SPECS[qName]</span><br><span class="line">        <span class="keyword">if</span> (keepSpec) &#123;</span><br><span class="line">            <span class="keyword">boolean</span> keepIt = <span class="function"><span class="keyword">true</span></span><br><span class="line">            <span class="title">if</span> <span class="params">(CreateManifestKeepList.<span class="keyword">this</span>.filter)</span> </span>&#123;</span><br><span class="line">                Map&lt;String, String&gt; attrMap = [:]</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; attr.getLength(); i++) &#123;</span><br><span class="line">                    attrMap[attr.getQName(i)] = attr.getValue(i)</span><br><span class="line">                &#125;</span><br><span class="line">                keepIt = CreateManifestKeepList.<span class="keyword">this</span>.filter(qName, attrMap)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (keepIt) &#123;</span><br><span class="line">                String nameValue = attr.getValue(<span class="string">'android:name'</span>)</span><br><span class="line">                <span class="keyword">if</span> (nameValue != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    out.write((String) <span class="string">"-keep class $&#123;nameValue&#125; $keepSpec\n"</span>)</span><br><span class="line">                &#125;</span><br></pre></td></tr></table></figure>
 <p>用来过滤的<code>KEEP_SPECS</code>：</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> static <span class="type">String</span> <span class="type">DEFAULT_KEEP_SPEC</span> = <span class="string">"&#123; &lt;init&gt;(); &#125;"</span></span><br><span class="line">   <span class="keyword">private</span> static <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; <span class="type">KEEP_SPECS</span> = [</span><br><span class="line">       <span class="symbol">'applicatio</span>n'       : <span class="string">"""&#123;</span><br><span class="line">   &lt;init&gt;();</span><br><span class="line">   void attachBaseContext(android.content.Context);</span><br><span class="line">&#125;"""</span>,</span><br><span class="line">       <span class="symbol">'activit</span>y'          : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">       <span class="symbol">'servic</span>e'           : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">       <span class="symbol">'receive</span>r'          : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">       <span class="symbol">'provide</span>r'          : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">       <span class="symbol">'instrumentatio</span>n'   : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">   ]</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> static <span class="type">String</span> <span class="type">DEFAULT_KEEP_SPEC</span> = <span class="string">"&#123; &lt;init&gt;(); &#125;"</span></span><br><span class="line">   <span class="keyword">private</span> static <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; <span class="type">KEEP_SPECS</span> = [</span><br><span class="line">       <span class="symbol">'applicatio</span>n'       : <span class="string">"""&#123;</span><br><span class="line">   &lt;init&gt;();</span><br><span class="line">   void attachBaseContext(android.content.Context);</span><br><span class="line">&#125;"""</span>,</span><br><span class="line">       <span class="symbol">'activit</span>y'          : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">       <span class="symbol">'servic</span>e'           : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">       <span class="symbol">'receive</span>r'          : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">       <span class="symbol">'provide</span>r'          : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">       <span class="symbol">'instrumentatio</span>n'   : <span class="type">DEFAULT_KEEP_SPEC</span>,</span><br><span class="line">   ]</span><br></pre></td></tr></table></figure>
 <p>可见，至少AndroidManifest.xml中<code>application</code>,<code>activity</code>,<code>service</code>,<code>receiver</code>,<code>provider</code>,<code>instrumentation</code>这6种标签的类，以及继承至<code>java.lang.annotation.Annotation</code>和<code>android.app.backup.BackupAgent</code>的类会用来产生maindexlist.txt。</p>
 <hr>
 <h1 id="0x05__u89E3_u51B3_u4E4B_u9053"><a href="#0x05__u89E3_u51B3_u4E4B_u9053" class="headerlink" title="0x05 解决之道"></a>0x05 解决之道</h1><p>本文绕过gradle build工具make componentClasses.jar的方式，不纠结于如何控制componentClasses.jar，而是直接指定哪些类需要放进maindexlist.txt，从而减少maindexlist类数量，避免main dex capacity exceeded的出现。具体方法如下：</p>
 <p>首先从app的com.xxxx.sdk.app.XXXXApplication类出发，分析出MultiDex.install之前的所有必须放入maindex的类（MultiDex包也需并入分析），输出到maindexlist.txt。<strong>正确分析依赖关系非常重要</strong>，否则运行时一定出现<code>ClassNotFoundException</code>。XXXXApplication对外依赖则<strong>越少越好</strong>，甚至可以通过java反射和动态加载特性让其仅依赖android.jar和部分接口类。</p>
 <p>另外加载过程中，被加载类的static initializer块里（clinit）用到的类和inner类也会被classloader主动加载，需要确保在maindexlist.txt中，可以使用本人scala写的<a href="https://github.com/JLLK/ClassDependenceAnalyser" target="_blank" rel="external">依赖分析工具</a>来进行分析，得到足够小的maindexlist.txt。</p>
 <p>最后，还需在build.gradle中加上：</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">afterEvaluate &#123;</span><br><span class="line">    tasks.matching &#123;</span><br><span class="line">        it.name.startsWith(<span class="string">"dex"</span>)</span><br><span class="line">    &#125;.each &#123; dx -&gt;</span><br><span class="line">        <span class="keyword">if</span> (dx.additionalParameters == <span class="literal">null</span>) &#123;</span><br><span class="line">            dx.additionalParameters = []</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">// optional</span></span><br><span class="line">    dx.additionalParameters += <span class="string">"--main-dex-list=$projectDir/maindexlist.txt"</span>.toString()</span><br><span class="line">    dx.additionalParameters += <span class="string">"--minimal-main-dex"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">afterEvaluate &#123;</span><br><span class="line">    tasks.matching &#123;</span><br><span class="line">        it.name.startsWith(<span class="string">"dex"</span>)</span><br><span class="line">    &#125;.each &#123; dx -&gt;</span><br><span class="line">        <span class="keyword">if</span> (dx.additionalParameters == <span class="literal">null</span>) &#123;</span><br><span class="line">            dx.additionalParameters = []</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">// optional</span></span><br><span class="line">    dx.additionalParameters += <span class="string">"--main-dex-list=$projectDir/maindexlist.txt"</span>.toString()</span><br><span class="line">    dx.additionalParameters += <span class="string">"--minimal-main-dex"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>本文中，最后的maindexlist.txt类数量成功由4000减少到1116，maindex体积由7M减少到1.3M，du -sh *.dex输出如下：</p>
 <p><img src="http://7xpcru.com1.z0.glb.clouddn.com/maindex_output.png?imageView2/2/w/150" alt=""></p>
 <p>从此再也不用担心main dex capacity exceeded了^_-</p>
@@ -379,7 +402,7 @@
 <p>由<a href="http://ct2wj.com/about" target="_blank" rel="external">陈涛</a>创作并维护的<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客采用<a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。</p>
 <p>本文首发于<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客（ <a href="http://ct2wj.com" target="_blank" rel="external">http://ct2wj.com</a> ），版权所有，侵权必究。</p>
 <p>本文永久链接：<a href="http://ct2wj.com/2015/12/22/the-way-to-solve-main-dex-capacity-exceeded-in-Android-gradle-build/" target="_blank" rel="external">http://ct2wj.com/2015/12/22/the-way-to-solve-main-dex-capacity-exceeded-in-Android-gradle-build/</a></p>
-</span>
+
       
     </div>
 
@@ -429,12 +452,11 @@
   </div>
 
 
-        </div>
+          </div>
+          
 
-        
 
-
-        
+          
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2015/12/22/the-way-to-solve-main-dex-capacity-exceeded-in-Android-gradle-build/"
@@ -444,10 +466,9 @@
   </div>
 
 
-      </div>
-
-      
+        </div>
         
+          
   
   <div class="sidebar-toggle">
     <div class="sidebar-toggle-line-wrap">
@@ -465,7 +486,7 @@
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table Of Contents
+            Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
             Overview
@@ -475,31 +496,37 @@
 
       <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" src="http://7xpcru.com1.z0.glb.clouddn.com/jllk.png" alt="tomchen" itemprop="image"/>
+          <img class="site-author-image" itemprop="image"
+               src="http://7xpcru.com1.z0.glb.clouddn.com/jllk.png"
+               alt="tomchen" />
           <p class="site-author-name" itemprop="name">tomchen</p>
+          <p class="site-description motion-element" itemprop="description">This dog is lazy, left nothing</p>
         </div>
-        <p class="site-description motion-element" itemprop="description">This dog is lazy, left nothing</p>
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
-
-          <div class="site-state-item site-state-categories">
-            <a href="/categories">
-              <span class="site-state-item-count">2</span>
-              <span class="site-state-item-name">categories</span>
+          
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">categories</span>
               </a>
-          </div>
+            </div>
+          
 
-          <div class="site-state-item site-state-tags">
-            <a href="/tags">
-              <span class="site-state-item-count">13</span>
-              <span class="site-state-item-name">tags</span>
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">tags</span>
               </a>
-          </div>
+            </div>
+          
 
         </nav>
 
@@ -564,7 +591,8 @@
   </aside>
 
 
-      
+        
+      </div>
     </main>
 
     <footer id="footer" class="footer">
@@ -574,7 +602,7 @@
   &copy; 
   <span itemprop="copyrightYear">2016</span>
   <span class="with-love">
-    <i class="icon-next-heart fa fa-heart"></i>
+    <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">tomchen</span>
 </div>
@@ -586,7 +614,7 @@
 <div class="theme-info">
   Theme -
   <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT
+    NexT.Muse
   </a>
 </div>
 
@@ -598,56 +626,41 @@
     <div class="back-to-top"></div>
   </div>
 
+  
+
+
+  
+
+
+
   <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
 
-  
-  
-
-  
-    
-
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"ct2wj"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-    
-     
-
-
-    
-  
-
-  
-  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
-  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
-
-
-  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
-  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
-<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
-
-<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
-
-
   <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
   <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
 
-  
-  
-<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
 
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
 
 <script type="text/javascript" id="sidebar.toc.highlight">
   $(document).ready(function () {
@@ -781,7 +794,7 @@
 
     $('.post-toc a').on('click', function (e) {
       e.preventDefault();
-      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
       var offset = $(targetSelector).offset().top;
       hasVelocity ?
         html.velocity('stop').velocity('scroll', {
@@ -794,11 +807,12 @@
     });
 
     // Expand sidebar on post detail page by default, when post has a toc.
-    motionMiddleWares.sidebar = function () {
+    NexT.motion.middleWares.sidebar = function () {
       var $tocContent = $('.post-toc-content');
+
       if (CONFIG.sidebar === 'post') {
         if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
-          displaySidebar();
+          NexT.utils.displaySidebar();
         }
       }
     };
@@ -807,13 +821,46 @@
 
 
 
-  <script type="text/javascript" src="/js/bootstrap.js"></script>
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ct2wj"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
 
   
   
 
   
   
+
 
 </body>
 </html>

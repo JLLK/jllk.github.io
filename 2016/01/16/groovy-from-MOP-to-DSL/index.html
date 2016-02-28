@@ -1,5 +1,11 @@
 <!doctype html>
-<html class="theme-next   use-motion ">
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -32,7 +38,7 @@
 
 <link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=0.4.5.2" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
   <meta name="keywords" content="DSL,MOP,gradle,groovy,metaprograming," />
@@ -46,7 +52,7 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.4.5.2" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
 
 
 
@@ -75,10 +81,16 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
 
 <script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
   var CONFIG = {
-    scheme: '',
-    sidebar: 'hide',
-    motion: true
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
   };
 </script>
 
@@ -87,15 +99,6 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="default">
 
-  <!--[if lte IE 8]>
-  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
-    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
-      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
-           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
-           style='margin-left:auto;margin-right:auto;display: block;'/>
-    </a>
-  </div>
-<![endif]-->
   
 
 
@@ -122,7 +125,14 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
 
 
-  <div class="container one-column page-post-detail">
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -206,6 +216,7 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
       
       
+      
         <li class="menu-item menu-item-search">
           <a href="#" class="st-search-show-outputs">
             
@@ -221,7 +232,9 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
   
     <div class="site-search">
       
-  
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
 
 <script type="text/javascript">
   (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
@@ -243,8 +256,9 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
     <main id="main" class="main">
       <div class="main-inner">
-        <div id="content" class="content">
-          
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
 
   <div id="posts" class="posts-expand">
     
@@ -275,7 +289,10 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
         <div class="post-meta">
           <span class="post-time">
-            Posted on
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
             <time itemprop="dateCreated" datetime="2016-01-16T21:04:21+08:00" content="2016-01-16">
               2016-01-16
             </time>
@@ -283,7 +300,11 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
           
             <span class="post-category" >
-              &nbsp; | &nbsp; In
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
                   <a href="/categories/groovy/" itemprop="url" rel="index">
@@ -311,18 +332,20 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
           
 
+          
+          
         </div>
       </header>
     
 
 
-    <div class="post-body">
+    <div class="post-body" itemprop="articleBody">
 
       
       
 
       
-        <span itemprop="articleBody"><h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><blockquote>
+        <h1 id="0x00__u524D_u8A00"><a href="#0x00__u524D_u8A00" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><blockquote>
 <p>groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类型语言的主要区别在哪呢，为什么gradle选择groovy实现自己的DSL? 它的优势在哪？</p>
 </blockquote>
 <p><img src="http://7xpcru.com1.z0.glb.clouddn.com/614px-Groovy-logo.svg.png" alt=""></p>
@@ -338,41 +361,41 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 </ul>
 <p>我们可以比较这几段代码来感受一下java和groovy反射调用时的区别：</p>
 <p>FleurWang.java</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FleurWang</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">say</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">"hello wonderland!"</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FleurWang</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">say</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="string">"hello wonderland!"</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>HolyHoleInJava.java</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HolyHoleInJava</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">jumpInto</span><span class="params">(Object somebody)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Method method = somebody.getClass().getMethod(<span class="string">"say"</span>);</span><br><span class="line">            method.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            Object msg = method.invoke(somebody);</span><br><span class="line">            System.out.println(<span class="string">"someone jump into HolyHoleInJava, and say: "</span> + msg);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchMethodException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HolyHoleInJava</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">jumpInto</span><span class="params">(Object somebody)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Method method = somebody.getClass().getMethod(<span class="string">"say"</span>);</span><br><span class="line">            method.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            Object msg = method.invoke(somebody);</span><br><span class="line">            System.out.println(<span class="string">"someone jump into HolyHoleInJava, and say: "</span> + msg);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchMethodException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>HolyHolyInGroovy.groovy</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HolyHoleInGroovy</span> &#123;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="keyword">static</span> jumpIntoGroovy(somebody) &#123;</span><br><span class="line">        println <span class="string">"someone jump into HolyHoleInGroovy, and say: $&#123;somebody.say()&#125;"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HolyHoleInGroovy</span> &#123;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="keyword">static</span> jumpIntoGroovy(somebody) &#123;</span><br><span class="line">        println <span class="string">"someone jump into HolyHoleInGroovy, and say: $&#123;somebody.say()&#125;"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>执行</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">girl = <span class="keyword">new</span> FleurWang()</span><br><span class="line">HolyHoleInJava.jumpInto(girl)</span><br><span class="line">HolyHoleInGroovy.jumpIntoGroovy(girl)</span><br></pre></td></tr></table></figure>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">girl = <span class="keyword">new</span> FleurWang()</span><br><span class="line">HolyHoleInJava.jumpInto(girl)</span><br><span class="line">HolyHoleInGroovy.jumpIntoGroovy(girl)</span><br></pre></td></tr></table></figure>
 <p>输出</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">someone jump <span class="keyword">into</span> HolyHoleInJava, <span class="keyword">and</span> <span class="command">say</span>: hello wonderland!</span><br><span class="line">someone jump <span class="keyword">into</span> HolyHoleInGroovy, <span class="keyword">and</span> <span class="command">say</span>: hello wonderland!</span><br></pre></td></tr></table></figure>
+<figure class="highlight applescript"><table><tr><td class="code"><pre><span class="line">someone jump <span class="keyword">into</span> HolyHoleInJava, <span class="keyword">and</span> <span class="command">say</span>: hello wonderland!</span><br><span class="line">someone jump <span class="keyword">into</span> HolyHoleInGroovy, <span class="keyword">and</span> <span class="command">say</span>: hello wonderland!</span><br></pre></td></tr></table></figure>
 <p>当然groovy也有一些还不够好的地方，例如：</p>
 <ul>
 <li>失去了编译时的类型检查，作为弥补，需要引入大量的单元测试代码来保证代码质量。</li>
 <li>相比java和scala混编，从java调用groovy代码很不方便。可以看下面代码感受一下~_~</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        GroovyShell shell = <span class="keyword">new</span> GroovyShell();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            shell.evaluate(<span class="keyword">new</span> File(<span class="string">"HolyHoleInGroovy.groovy"</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        GroovyShell shell = <span class="keyword">new</span> GroovyShell();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            shell.evaluate(<span class="keyword">new</span> File(<span class="string">"HolyHoleInGroovy.groovy"</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>不过从groovy调java代码还是挺方便的，以及java各种优秀的开源库支持，再加上groovy自身的优点，这也许就是groovy成为gradle的DSL的原因。</p>
 <hr>
 <h1 id="0x02__u5143_u7F16_u7A0B_u548C_u5143_u5BF9_u8C61_u534F_u8BAE"><a href="#0x02__u5143_u7F16_u7A0B_u548C_u5143_u5BF9_u8C61_u534F_u8BAE" class="headerlink" title="0x02 元编程和元对象协议"></a>0x02 元编程和元对象协议</h1><p>我们知道java中的类加载后行为就确定了，而groovy中的类却是动态可变的，这是因为groovy支持元编程（虽然也能用其他手段改变，如native hook，运行时修改字节码等，但这里只讨论语言特性是否支持)。元编程(metaprogramming)是指代码在运行时可以动态改变自己的行为，元对象协议(MOP, Meta-Object Protocol)用来保证动态语言中元编程能力。在groovy中，元对象协议主要通过反射、元类(metaclass)、expandos等技术实现。</p>
 <p>groovy世界中的类继承至java.lang.Object，并且实现了groovy.lang.GroovyObject接口，这个接口定义的invokeMethod, xxxProperty, xxxMetaClass让groovy对象具有动态扩展方法和属性的能力。</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> groovy.lang;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GroovyObject</span> &#123;</span>	Object invokeMethod(String name, Object args); </span><br><span class="line">	Object getProperty(String property);	<span class="typename">void</span> setProperty(String property, Object newValue); </span><br><span class="line">	MetaClass getMetaClass();	<span class="typename">void</span> setMetaClass(MetaClass metaClass);￼￼￼￼￼￼￼￼&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> groovy.lang;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">GroovyObject</span> &#123;</span>	Object invokeMethod(String name, Object args); </span><br><span class="line">	Object getProperty(String property);	<span class="typename">void</span> setProperty(String property, Object newValue); </span><br><span class="line">	MetaClass getMetaClass();	<span class="typename">void</span> setMetaClass(MetaClass metaClass);￼￼￼￼￼￼￼￼&#125;</span><br></pre></td></tr></table></figure>
 <p>例如我们可以通过setMetaClass来改变FleurWang的行为。</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">girl = <span class="keyword">new</span> FleurWang()</span><br><span class="line"></span><br><span class="line">girl.metaClass.laughAt = &#123; somebody -&gt;</span><br><span class="line">    System.out.println(<span class="string">"$&#123;delegate.class.getSimpleName()&#125; is laughing at $somebody"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">girl.laughAt(<span class="string">"tomchen"</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">girl = <span class="keyword">new</span> FleurWang()</span><br><span class="line"></span><br><span class="line">girl.metaClass.laughAt = &#123; somebody -&gt;</span><br><span class="line">    System.out.println(<span class="string">"$&#123;delegate.class.getSimpleName()&#125; is laughing at $somebody"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">girl.laughAt(<span class="string">"tomchen"</span>)</span><br></pre></td></tr></table></figure>
 <p>输出</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FleurWang <span class="keyword">is</span> laughing <span class="keyword">at</span> tomchen</span><br></pre></td></tr></table></figure>
+<figure class="highlight applescript"><table><tr><td class="code"><pre><span class="line">FleurWang <span class="keyword">is</span> laughing <span class="keyword">at</span> tomchen</span><br></pre></td></tr></table></figure>
 <p>无论是java对象，还是groovy对象，每个对象的都有自己对应的MetaClass。groovy运行时生成进程唯一的MetaClassRegister对象，用于管理MetaClass和Class以及对象的映射关系。对于普通java对象而言，当它的方法被调用时，groovy会先去MetaClassRegister拿它的MetaClass看是否存在同名且同签名的方法。没有的话再去执行java对象本身的方法。因此，MetaClass的方法优先级高于原生方法。</p>
 <p><img src="http://7xpcru.com1.z0.glb.clouddn.com/groovy2java.jpg" alt=""></p>
 <p>对于groovy对象方法调用的容错会稍微多一点，groovy运行时会先检查对象是不是实现了GroovyInterceptable接口，是的话直接调用invokeMethod，否则会去MetaClass中找，如果没找到，那么会去Groovy对象本身找，还是没有的话，会去找Groovy对象否存在和方法同名的Closure类型字段closure，找到的话就直接closure()了。如果连这个字段都没有，也不会放弃，会尝试调用Groovy对象中的methodMissing方法，万一连这个也没有-_-，groovy还是会去做最后的努力，调用GroovyObject的invokeMethod()，没实现的话就会抛MissingMethodException。</p>
 <p><img src="http://7xpcru.com1.z0.glb.clouddn.com/How%20Groovy%20handles%20method%20calls%20on%20a%20POGO.png" alt=""></p>
 <hr>
 <h1 id="0x03__u4E00_u4E2A_u7B80_u5355_u7684DSL"><a href="#0x03__u4E00_u4E2A_u7B80_u5355_u7684DSL" class="headerlink" title="0x03 一个简单的DSL"></a>0x03 一个简单的DSL</h1><p>利用groovy的动态特性和元编程能力来构造一个简单的DSL：</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MovingCastle</span> &#123;</span></span><br><span class="line">    <span class="keyword">def</span> level = <span class="number">0</span></span><br><span class="line">    <span class="keyword">def</span> result = <span class="keyword">new</span> StringWriter()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> members(closure) &#123;</span><br><span class="line">        result &lt;&lt; <span class="string">"tomchen&amp;fluer.wang's moving castle:\n"</span></span><br><span class="line">        closure.delegate = <span class="keyword">this</span></span><br><span class="line">        closure()</span><br><span class="line">        println result</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> methodMissing(String name, args) &#123;</span><br><span class="line">        handle(name, args)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> propertyMissing(String name) &#123;</span><br><span class="line">        Object[] emptyArray = []</span><br><span class="line">        handle(name, emptyArray)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> handle(String name, args) &#123;</span><br><span class="line">        level++</span><br><span class="line">        level.times &#123;</span><br><span class="line">            result &lt;&lt; <span class="string">" "</span></span><br><span class="line">        &#125;</span><br><span class="line">        result &lt;&lt; name.replaceAll(<span class="string">"_"</span>, <span class="string">" "</span>)</span><br><span class="line">        result &lt;&lt; printParameters(args)</span><br><span class="line">        result &lt;&lt; <span class="string">"\n"</span></span><br><span class="line">        <span class="keyword">if</span> (args.length &gt; <span class="number">0</span> &amp;&amp; args[-<span class="number">1</span>] <span class="keyword">instanceof</span> Closure) &#123;</span><br><span class="line">            <span class="keyword">def</span> theClosure = args[-<span class="number">1</span>]</span><br><span class="line">            theClosure.delegate = <span class="keyword">this</span></span><br><span class="line">            theClosure()</span><br><span class="line">        &#125;</span><br><span class="line">        level--</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> printParameters(args) &#123;</span><br><span class="line">        <span class="keyword">def</span> values = <span class="string">""</span></span><br><span class="line">        <span class="keyword">if</span> (args.length &gt; <span class="number">0</span> &amp;&amp; args[<span class="number">0</span>] <span class="keyword">instanceof</span> Map) &#123;</span><br><span class="line">            values += <span class="string">" ["</span></span><br><span class="line">            <span class="keyword">def</span> count = <span class="number">0</span></span><br><span class="line">            args[<span class="number">0</span>].each &#123; key, value -&gt;</span><br><span class="line">                count++</span><br><span class="line">                values += (count &gt; <span class="number">1</span> ? " " : <span class="string">""</span>)</span><br><span class="line">                values += <span class="string">"$&#123;key&#125;: $&#123;value&#125;"</span></span><br><span class="line">            &#125;</span><br><span class="line">            values += <span class="string">"]"</span></span><br><span class="line">        &#125;</span><br><span class="line">        values</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MovingCastle</span> &#123;</span></span><br><span class="line">    <span class="keyword">def</span> level = <span class="number">0</span></span><br><span class="line">    <span class="keyword">def</span> result = <span class="keyword">new</span> StringWriter()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> members(closure) &#123;</span><br><span class="line">        result &lt;&lt; <span class="string">"tomchen&amp;fluer.wang's moving castle:\n"</span></span><br><span class="line">        closure.delegate = <span class="keyword">this</span></span><br><span class="line">        closure()</span><br><span class="line">        println result</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> methodMissing(String name, args) &#123;</span><br><span class="line">        handle(name, args)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> propertyMissing(String name) &#123;</span><br><span class="line">        Object[] emptyArray = []</span><br><span class="line">        handle(name, emptyArray)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> handle(String name, args) &#123;</span><br><span class="line">        level++</span><br><span class="line">        level.times &#123;</span><br><span class="line">            result &lt;&lt; <span class="string">" "</span></span><br><span class="line">        &#125;</span><br><span class="line">        result &lt;&lt; name.replaceAll(<span class="string">"_"</span>, <span class="string">" "</span>)</span><br><span class="line">        result &lt;&lt; printParameters(args)</span><br><span class="line">        result &lt;&lt; <span class="string">"\n"</span></span><br><span class="line">        <span class="keyword">if</span> (args.length &gt; <span class="number">0</span> &amp;&amp; args[-<span class="number">1</span>] <span class="keyword">instanceof</span> Closure) &#123;</span><br><span class="line">            <span class="keyword">def</span> theClosure = args[-<span class="number">1</span>]</span><br><span class="line">            theClosure.delegate = <span class="keyword">this</span></span><br><span class="line">            theClosure()</span><br><span class="line">        &#125;</span><br><span class="line">        level--</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> printParameters(args) &#123;</span><br><span class="line">        <span class="keyword">def</span> values = <span class="string">""</span></span><br><span class="line">        <span class="keyword">if</span> (args.length &gt; <span class="number">0</span> &amp;&amp; args[<span class="number">0</span>] <span class="keyword">instanceof</span> Map) &#123;</span><br><span class="line">            values += <span class="string">" ["</span></span><br><span class="line">            <span class="keyword">def</span> count = <span class="number">0</span></span><br><span class="line">            args[<span class="number">0</span>].each &#123; key, value -&gt;</span><br><span class="line">                count++</span><br><span class="line">                values += (count &gt; <span class="number">1</span> ? " " : <span class="string">""</span>)</span><br><span class="line">                values += <span class="string">"$&#123;key&#125;: $&#123;value&#125;"</span></span><br><span class="line">            &#125;</span><br><span class="line">            values += <span class="string">"]"</span></span><br><span class="line">        &#125;</span><br><span class="line">        values</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>输入</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">castle = <span class="keyword">new</span> MovingCastle()</span><br><span class="line">castle.members &#123;</span><br><span class="line">    tomchen &#123;</span><br><span class="line">        about(<span class="string">github:</span> <span class="string">"https://github.com/jllk"</span>)</span><br><span class="line">        lauguage &#123;</span><br><span class="line">            java</span><br><span class="line">            scala</span><br><span class="line">            c</span><br><span class="line">            golang</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    fluerWang &#123;</span><br><span class="line">        about(<span class="string">github:</span> <span class="string">"https://github.com/fleurWang"</span>)</span><br><span class="line">        lauguage &#123;</span><br><span class="line">            javascript</span><br><span class="line">            html</span><br><span class="line">            css</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">castle = <span class="keyword">new</span> MovingCastle()</span><br><span class="line">castle.members &#123;</span><br><span class="line">    tomchen &#123;</span><br><span class="line">        about(<span class="string">github:</span> <span class="string">"https://github.com/jllk"</span>)</span><br><span class="line">        lauguage &#123;</span><br><span class="line">            java</span><br><span class="line">            scala</span><br><span class="line">            c</span><br><span class="line">            golang</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    fluerWang &#123;</span><br><span class="line">        about(<span class="string">github:</span> <span class="string">"https://github.com/fleurWang"</span>)</span><br><span class="line">        lauguage &#123;</span><br><span class="line">            javascript</span><br><span class="line">            html</span><br><span class="line">            css</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>输出</p>
-<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">tomchen&amp;fluer.wang's moving castle:</span><br><span class="line"> tomchen</span><br><span class="line">  <span class="keyword">about</span> [github: https:<span class="comment">//github.com/jllk]</span></span><br><span class="line">  lauguage</span><br><span class="line">   java</span><br><span class="line">   <span class="keyword">scala</span></span><br><span class="line">   c</span><br><span class="line">   golang</span><br><span class="line"> fluerWang</span><br><span class="line">  <span class="keyword">about</span> [github: https:<span class="comment">//github.com/fleurWang]</span></span><br><span class="line">  lauguage</span><br><span class="line">   javascript</span><br><span class="line">   html</span><br><span class="line">   css</span><br></pre></td></tr></table></figure>
+<figure class="highlight stata"><table><tr><td class="code"><pre><span class="line">tomchen&amp;fluer.wang's moving castle:</span><br><span class="line"> tomchen</span><br><span class="line">  <span class="keyword">about</span> [github: https:<span class="comment">//github.com/jllk]</span></span><br><span class="line">  lauguage</span><br><span class="line">   java</span><br><span class="line">   <span class="keyword">scala</span></span><br><span class="line">   c</span><br><span class="line">   golang</span><br><span class="line"> fluerWang</span><br><span class="line">  <span class="keyword">about</span> [github: https:<span class="comment">//github.com/fleurWang]</span></span><br><span class="line">  lauguage</span><br><span class="line">   javascript</span><br><span class="line">   html</span><br><span class="line">   css</span><br></pre></td></tr></table></figure>
 <hr>
 <h4 id="u53C2_u8003"><a href="#u53C2_u8003" class="headerlink" title="参考"></a>参考</h4><p>[1]. <a href="https://pragprog.com/book/vslg2/programming-groovy-2" target="_blank" rel="external">programming Groovy 2</a></p>
 <p>[2]. <a href="http://www.amazon.com/Groovy-Domain-Specific-Languages-Fergal-Dearle/dp/1849695407/ref=sr_1_1?ie=UTF8&amp;qid=1452654163&amp;sr=8-1&amp;keywords=Groovy_for_Domain-Specific_Languages" target="_blank" rel="external">Groovy for Domain-Specific Languages - Second Edition</a></p>
@@ -382,7 +405,7 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 <p>由<a href="http://ct2wj.com/about" target="_blank" rel="external">陈涛</a>创作并维护的<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客采用<a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。</p>
 <p>本文首发于<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客（ <a href="http://ct2wj.com" target="_blank" rel="external">http://ct2wj.com</a> ），版权所有，侵权必究。</p>
 <p>本文永久链接：<a href="http://ct2wj.com/2016/01/16/groovy-from-MOP-to-DSL/" target="_blank" rel="external">http://ct2wj.com/2016/01/16/groovy-from-MOP-to-DSL/</a></p>
-</span>
+
       
     </div>
 
@@ -436,12 +459,11 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
   </div>
 
 
-        </div>
+          </div>
+          
 
-        
 
-
-        
+          
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2016/01/16/groovy-from-MOP-to-DSL/"
@@ -451,10 +473,9 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
   </div>
 
 
-      </div>
-
-      
+        </div>
         
+          
   
   <div class="sidebar-toggle">
     <div class="sidebar-toggle-line-wrap">
@@ -472,7 +493,7 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
       
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            Table Of Contents
+            Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
             Overview
@@ -482,31 +503,37 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
       <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" src="http://7xpcru.com1.z0.glb.clouddn.com/jllk.png" alt="tomchen" itemprop="image"/>
+          <img class="site-author-image" itemprop="image"
+               src="http://7xpcru.com1.z0.glb.clouddn.com/jllk.png"
+               alt="tomchen" />
           <p class="site-author-name" itemprop="name">tomchen</p>
+          <p class="site-description motion-element" itemprop="description">This dog is lazy, left nothing</p>
         </div>
-        <p class="site-description motion-element" itemprop="description">This dog is lazy, left nothing</p>
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">posts</span>
             </a>
           </div>
-
-          <div class="site-state-item site-state-categories">
-            <a href="/categories">
-              <span class="site-state-item-count">2</span>
-              <span class="site-state-item-name">categories</span>
+          
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">categories</span>
               </a>
-          </div>
+            </div>
+          
 
-          <div class="site-state-item site-state-tags">
-            <a href="/tags">
-              <span class="site-state-item-count">13</span>
-              <span class="site-state-item-name">tags</span>
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">tags</span>
               </a>
-          </div>
+            </div>
+          
 
         </nav>
 
@@ -571,7 +598,8 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
   </aside>
 
 
-      
+        
+      </div>
     </main>
 
     <footer id="footer" class="footer">
@@ -581,7 +609,7 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
   &copy; 
   <span itemprop="copyrightYear">2016</span>
   <span class="with-love">
-    <i class="icon-next-heart fa fa-heart"></i>
+    <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">tomchen</span>
 </div>
@@ -593,7 +621,7 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 <div class="theme-info">
   Theme -
   <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
-    NexT
+    NexT.Muse
   </a>
 </div>
 
@@ -605,56 +633,41 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
     <div class="back-to-top"></div>
   </div>
 
+  
+
+
+  
+
+
+
   <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
 
-  
-  
-
-  
-    
-
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"ct2wj"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-    
-     
-
-
-    
-  
-
-  
-  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
-  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.5.2"></script>
-
-
-  <script type="text/javascript" src="/js/helpers.js?v=0.4.5.2"></script>
-  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
-<script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
-
-<script type="text/javascript" src="/js/motion.js?v=0.4.5.2" id="motion.global"></script>
-
-
   <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
   <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
 
-  
-  
-<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.5.2" id="bootstrap.scrollspy.custom"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
 
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
 
 <script type="text/javascript" id="sidebar.toc.highlight">
   $(document).ready(function () {
@@ -788,7 +801,7 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
     $('.post-toc a').on('click', function (e) {
       e.preventDefault();
-      var targetSelector = escapeSelector(this.getAttribute('href'));
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
       var offset = $(targetSelector).offset().top;
       hasVelocity ?
         html.velocity('stop').velocity('scroll', {
@@ -801,11 +814,12 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
     });
 
     // Expand sidebar on post detail page by default, when post has a toc.
-    motionMiddleWares.sidebar = function () {
+    NexT.motion.middleWares.sidebar = function () {
       var $tocContent = $('.post-toc-content');
+
       if (CONFIG.sidebar === 'post') {
         if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
-          displaySidebar();
+          NexT.utils.displaySidebar();
         }
       }
     };
@@ -814,13 +828,46 @@ groovy作为一门基于jvm的动态类型语言，与java, scala等jvm静态类
 
 
 
-  <script type="text/javascript" src="/js/bootstrap.js"></script>
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ct2wj"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
 
   
   
 
   
   
+
 
 </body>
 </html>

@@ -1,0 +1,932 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,pdnsd,scala,shadowsocks,tun2socks,vpn," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="tomchen&fleur.wang's moving castle" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="0x00 简介shadowsocks-android(ss-android)是一款android上的科学上网软件，特点是无需root权限就能实现全局代理。作为一个shadowsocks重度使用者，本来想学习一下，但发现网上相关文章和资料还比较少，因此有了本篇文章，旨在分享自己对ss-android源码的一些理解。本文分析的源码基于ss-android的2.9.11版本。
+
+0x01 ss-andr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shadowsocks-android源码解析">
+<meta property="og:url" content="http://www.ct2wj.com/2016/02/28/shadowsocks-android-source-code-analysis/index.html">
+<meta property="og:site_name" content="tomchen&fleur.wang's moving castle">
+<meta property="og:description" content="0x00 简介shadowsocks-android(ss-android)是一款android上的科学上网软件，特点是无需root权限就能实现全局代理。作为一个shadowsocks重度使用者，本来想学习一下，但发现网上相关文章和资料还比较少，因此有了本篇文章，旨在分享自己对ss-android源码的一些理解。本文分析的源码基于ss-android的2.9.11版本。
+
+0x01 ss-andr">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/ProcessOfShadowsocks.jpg">
+<meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/cc.png">
+<meta property="og:updated_time" content="2016-02-28T15:08:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="shadowsocks-android源码解析">
+<meta name="twitter:description" content="0x00 简介shadowsocks-android(ss-android)是一款android上的科学上网软件，特点是无需root权限就能实现全局代理。作为一个shadowsocks重度使用者，本来想学习一下，但发现网上相关文章和资料还比较少，因此有了本篇文章，旨在分享自己对ss-android源码的一些理解。本文分析的源码基于ss-android的2.9.11版本。
+
+0x01 ss-andr">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
+  };
+</script>
+
+  <title> shadowsocks-android源码解析 | tomchen&fleur.wang's moving castle </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-71641925-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?ba6dfd96f83113651e44d745cd86aa59";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">tomchen&fleur.wang's moving castle</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">This dog is lazy, left nothing</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu menu-left">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+      
+      
+        <li class="menu-item menu-item-search">
+          <a href="#" class="st-search-show-outputs">
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'R7Hs2YB8usgTLynUrELe','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                shadowsocks-android源码解析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-02-28T16:41:44+08:00" content="2016-02-28">
+              2016-02-28
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index">
+                    <span itemprop="name">network</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/02/28/shadowsocks-android-source-code-analysis/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/28/shadowsocks-android-source-code-analysis/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="0x00__u7B80_u4ECB"><a href="#0x00__u7B80_u4ECB" class="headerlink" title="0x00 简介"></a>0x00 简介</h1><p><a href="https://github.com/shadowsocks/shadowsocks-android" target="_blank" rel="external">shadowsocks-android</a>(ss-android)是一款android上的科学上网软件，特点是无需root权限就能实现全局代理。作为一个shadowsocks重度使用者，本来想学习一下，但发现网上相关文章和资料还比较少，因此有了本篇文章，旨在分享自己对ss-android源码的一些理解。本文分析的源码基于ss-android的<a href="https://github.com/shadowsocks/shadowsocks-android/releases/tag/v2.9.11" target="_blank" rel="external">2.9.11</a>版本。</p>
+<hr>
+<h1 id="0x01_ss-android_u8FDB_u7A0B_u6982_u8FF0"><a href="#0x01_ss-android_u8FDB_u7A0B_u6982_u8FF0" class="headerlink" title="0x01 ss-android进程概述"></a>0x01 ss-android进程概述</h1><p>本文先从整体上分析ss-android进程之间的关系，然后从每个进程角度出发，结合源码分析ss-android科学上网的实现原理。ss-android启动时默认工作在vpn模式，创建2个java进程<strong>shadowsocks</strong>，<strong>shadowsocks:vpn</strong>以及4个native进程<strong>ss-local</strong>、<strong>pdnsd</strong>、<strong>ss-tunel</strong>、<strong>tun2socks</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">u0_a124   <span class="number">14935</span> <span class="number">1857</span>  <span class="number">1058332</span> <span class="number">56560</span> SyS_epoll_ <span class="number">00000000</span> S com.github.shadowsocks:vpn</span><br><span class="line">u0_a124   <span class="number">16336</span> <span class="number">1857</span>  <span class="number">1235568</span> <span class="number">88380</span> SyS_epoll_ <span class="number">00000000</span> S com.github.shadowsocks</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">u0_a124   <span class="number">20419</span> <span class="number">14935</span> <span class="number">3376</span>   <span class="number">1136</span>  SyS_epoll_ <span class="number">00000000</span> S /data/data/com.github.shadowsocks/ss-local</span><br><span class="line">u0_a124   <span class="number">20421</span> <span class="number">14935</span> <span class="number">7688</span>   <span class="number">804</span>   <span class="keyword">do</span>_sigtime <span class="number">00000000</span> S /data/data/com.github.shadowsocks/pdnsd</span><br><span class="line">u0_a124   <span class="number">20425</span> <span class="number">14935</span> <span class="number">3112</span>   <span class="number">940</span>   SyS_epoll_ <span class="number">00000000</span> S /data/data/com.github.shadowsocks/ss-tunnel</span><br><span class="line">u0_a124   <span class="number">20431</span> <span class="number">14935</span> <span class="number">3812</span>   <span class="number">1420</span>  SyS_epoll_ <span class="number">00000000</span> S /data/data/com.github.shadowsocks/tun2socks</span><br></pre></td></tr></table></figure>
+<p>ss-android进程启动流程以及进程间通信关系图：</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">shadowsocks =&#62; shadowsocks:vpn =&#62; ss-local =&#62; pdnsd =&#62; ss-tunnel =&#62; tun2socks</span><br></pre></td></tr></table></figure>
+<p><img src="http://7xpcru.com1.z0.glb.clouddn.com/ProcessOfShadowsocks.jpg" alt=""></p>
+<a id="more"></a>
+<hr>
+<h1 id="0x02_shadowsocks_u4E0Eshadowsocks_3Avpn"><a href="#0x02_shadowsocks_u4E0Eshadowsocks_3Avpn" class="headerlink" title="0x02 shadowsocks与shadowsocks:vpn"></a>0x02 shadowsocks与shadowsocks:vpn</h1><p>shadowsocks进程主要负责UI展示，用户可以设置shadowsocks服务器地址端口，选择加密算法，工作模式（vpn或nat），是否默认采用udp转发等。shadowsocks在<code>onCreate</code>时会去<code>attachService</code>，默认bind的是<code>ShadowsocksVpnService</code>，工作在shadowsocks:vpn进程。</p>
+<p>ServiceBoundContext.scala</p>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">attachService</span>(</span>callback: <span class="type">IShadowsocksServiceCallback</span>.<span class="type">Stub</span> = <span class="literal">null</span>) &#123;</span><br><span class="line">  <span class="keyword">this</span>.callback = callback</span><br><span class="line">  <span class="keyword">if</span> (bgService == <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">val</span> s =</span><br><span class="line">      <span class="keyword">if</span> (<span class="type">ShadowsocksApplication</span>.isVpnEnabled) classOf[<span class="type">ShadowsocksVpnService</span>] <span class="keyword">else</span> classOf[<span class="type">ShadowsocksNatService</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> intent = <span class="keyword">new</span> <span class="type">Intent</span>(<span class="keyword">this</span>, s)</span><br><span class="line">    intent.setAction(<span class="type">Action</span>.<span class="type">SERVICE</span>)</span><br><span class="line"></span><br><span class="line">    connection = <span class="keyword">new</span> <span class="type">ShadowsocksServiceConnection</span>()</span><br><span class="line">    bindService(intent, connection, <span class="type">Context</span>.<span class="type">BIND_AUTO_CREATE</span>)</span><br><span class="line">    startService(intent)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>shadowsocks:vpn启动后在后台工作，除了启动native进程，流量统计等功能也是shadowsocks:vpn和shadowsocks协作完成的。shadowsocks通过<code>bindService</code>和shadowsocks:vpn建立Binder IPC，注册跨进程callback，通过callback把流量变化展示到shadowsocks。</p>
+<p>当用户点击开启vpn时，shadowsocks执行<code>prepareStartService</code>：</p>
+<p>Shadowsocks.scala</p>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepareStartService</span>(</span>) &#123;</span><br><span class="line">  <span class="type">ThrowableFuture</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="type">ShadowsocksApplication</span>.isVpnEnabled) &#123;</span><br><span class="line">      <span class="keyword">val</span> intent = <span class="type">VpnService</span>.prepare(<span class="keyword">this</span>)</span><br><span class="line">      <span class="keyword">if</span> (intent != <span class="literal">null</span>) &#123;</span><br><span class="line">        startActivityForResult(intent, <span class="type">Shadowsocks</span>.<span class="type">REQUEST_CONNECT</span>)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        handler.post(() =&gt; onActivityResult(<span class="type">Shadowsocks</span>.<span class="type">REQUEST_CONNECT</span>, <span class="type">Activity</span>.<span class="type">RESULT_OK</span>, <span class="literal">null</span>))</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      serviceStart()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>VpnService.prepare</code>去检查系统当前是否存在一个vpn连接。如果不存在，会返回一个让用户确认开启vpn界面的intent，这时<code>onActivityResult</code>传入<code>Activity.RESULT_OK</code>。在返回<code>Activity.RESULT_OK</code>的情况下，shadowsocks会执行<code>bgService.start</code>，准备让shadowsocks:vpn启动native进程。</p>
+<p>Shadowsocks.scala</p>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">onActivityResult</span>(</span>requestCode: <span class="type">Int</span>, resultCode: <span class="type">Int</span>, data: <span class="type">Intent</span>) = resultCode <span class="keyword">match</span> &#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="type">Activity</span>.<span class="type">RESULT_OK</span> =&gt;</span><br><span class="line">    serviceStart()</span><br><span class="line">  <span class="keyword">case</span> _ =&gt;</span><br><span class="line">    cancelStart()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">def</span> <span class="title">serviceStart</span>(</span>) &#123;</span><br><span class="line">   bgService.start(<span class="type">ConfigUtils</span>.load(<span class="type">ShadowsocksApplication</span>.settings))</span><br><span class="line">...</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p><code>bgServive.start</code>会在shadowsocks:vpn中调起<code>startRunner</code>， <code>ShadowsocksVpnThread.start</code>会另起线程创建socket（socket文件是/data/data/com.github.shadowsocks/protect_path），以unix domain socket的方式和native进程ss-local进行IPC，目的是把远程shadowsocks服务端地址“保护”起来，原因后面会详细分析。</p>
+<p>接着做dns解析，<code>Utils.resolve</code>得到远程shadowsocks代理服务器的ip地址。</p>
+<p>ShadowsocksVpnService.scala</p>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line"> <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">startRunner</span>(</span>config: <span class="type">Config</span>) &#123;</span><br><span class="line">   <span class="keyword">super</span>.startRunner(config)</span><br><span class="line">   vpnThread = <span class="keyword">new</span> <span class="type">ShadowsocksVpnThread</span>(<span class="keyword">this</span>)</span><br><span class="line">   vpnThread.start()</span><br><span class="line">...</span><br><span class="line">   <span class="type">ThrowableFuture</span> &#123;</span><br><span class="line">...</span><br><span class="line">     <span class="keyword">if</span> (config != <span class="literal">null</span>) &#123;</span><br><span class="line">...</span><br><span class="line">       <span class="comment">// Resolve the server address</span></span><br><span class="line">       <span class="keyword">var</span> resolved: <span class="type">Boolean</span> = <span class="literal">false</span></span><br><span class="line">       <span class="keyword">if</span> (!<span class="type">Utils</span>.isNumeric(config.proxy)) &#123;</span><br><span class="line">         <span class="type">Utils</span>.resolve(config.proxy, enableIPv6 = <span class="literal">true</span>) <span class="keyword">match</span> &#123;</span><br><span class="line">           <span class="keyword">case</span> <span class="type">Some</span>(addr) =&gt;</span><br><span class="line">             config.proxy = addr</span><br><span class="line">             resolved = <span class="literal">true</span></span><br><span class="line">           <span class="keyword">case</span> <span class="type">None</span> =&gt; resolved = <span class="literal">false</span></span><br><span class="line">         &#125;</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         resolved = <span class="literal">true</span></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (resolved &amp;&amp; handleConnection) &#123;</span><br><span class="line">         changeState(<span class="type">State</span>.<span class="type">CONNECTED</span>)</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123; ... &#125;</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>服务器地址解析成功后，最终调用<code>handleConnection</code>去启动ss-local、tun2socks、pdnsd和ss-tunnel。</p>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line"><span class="comment">/** Called when the activity is first created. */</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handleConnection</span>:</span> <span class="type">Boolean</span> = &#123;</span><br><span class="line">  startShadowsocksDaemon()</span><br><span class="line">  <span class="keyword">if</span> (!config.isUdpDns) &#123;</span><br><span class="line">    startDnsDaemon()</span><br><span class="line">    startDnsTunnel()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">val</span> fd = startVpn()</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (fd != -<span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> tries = <span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> (tries &lt; <span class="number">5</span>) &#123;</span><br><span class="line">      <span class="type">Thread</span>.sleep(<span class="number">1000</span> * tries)</span><br><span class="line">      <span class="keyword">if</span> (<span class="type">System</span>.sendfd(fd) != -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">      tries += <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="0x03_ss-local"><a href="#0x03_ss-local" class="headerlink" title="0x03 ss-local"></a>0x03 ss-local</h1><p>ss-local是本地socks代理服务进程，可以看作一个通道，通道一端连着墙外的shawdowsocks服务器，另一端接着手机的本地客户端进程。</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#26412;&#22320;&#23458;&#25143;&#31471;&#36827;&#31243; &#60;=&#62;&#65288;&#26412;&#22320;&#26381;&#21153;&#31471;:1080&#65289;ss-local (&#26412;&#22320;socks&#23458;&#25143;&#31471;) &#60;==| GFW |==&#62; &#36828;&#31243;socks&#26381;&#21153;&#31471;</span><br></pre></td></tr></table></figure>
+<p>ss-local是如何让客户端进程把数据发送到远程socks服务端呢？</p>
+<p>ss-local文件执行后，<code>main</code>函数会在<code>create_and_bind</code>创建和返回本地服务端socket fd，监听本地进程在localhost:1080上的连接请求。<code>ev_io_init</code>用来在fd上注册监听事件以及对应的回调函数，当listenfd上<code>EV_READ</code>发生时，<code>accept_cb</code>被回调。内核在某个fd上准备好数据后，这个fd就是<strong>可读</strong>的，<code>EV_READ</code>就会在新的轮询中被触发；同样，如果send buffer还有空间，就是<strong>可写</strong>的，<code>EV_WRITE</code>会被触发。</p>
+<p>local.c</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></span><br><span class="line"></span>&#123;	 ...</span><br><span class="line">    <span class="comment">// Setup socket</span></span><br><span class="line">    <span class="keyword">int</span> listenfd;</span><br><span class="line">    listenfd = create_and_bind(local_addr, local_port);</span><br><span class="line">    <span class="keyword">if</span> (listenfd &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        FATAL(<span class="string">"bind() error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (listen(listenfd, SOMAXCONN) == -<span class="number">1</span>) &#123;</span><br><span class="line">        FATAL(<span class="string">"listen() error"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    setnonblocking(listenfd);</span><br><span class="line"></span><br><span class="line">    listen_ctx.fd = listenfd;</span><br><span class="line"></span><br><span class="line">    ev_io_init(&amp;listen_ctx.io, accept_cb, listenfd, EV_READ);</span><br><span class="line">    ev_io_start(loop, &amp;listen_ctx.io);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>create_and_bind</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (rp = result; rp != <span class="literal">NULL</span>; rp = rp-&gt;ai_next) &#123;</span><br><span class="line">    listen_sock = socket(rp-&gt;ai_family, rp-&gt;ai_socktype, rp-&gt;ai_protocol);</span><br></pre></td></tr></table></figure>
+<p>listenfd收到数据时，说明有本地客户端进程连接进来了，<code>accept_cb</code>被回调，为返回的serverfd注册I/O事件回调函数<code>server_recv_cb</code>和<code>server_send_cb</code>。当本地客户端进程有数据到达时，<code>server_recv_cb</code>被回调，<code>recv</code>接收socket的数据到<code>buf-&gt;array</code>（此时的buf是<code>server-&gt;buf</code>）。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">accept_cb</span><span class="params">(EV_P_ ev_io *w, <span class="keyword">int</span> revents)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">listen_ctx_t</span> *listener = (<span class="keyword">listen_ctx_t</span> *)w;</span><br><span class="line">    <span class="keyword">int</span> serverfd           = accept(listener-&gt;fd, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">server_t</span> *server = new_server(serverfd, listener-&gt;method);</span><br><span class="line">    server-&gt;listener = listener;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> server_t *<span class="title">new_server</span><span class="params">(<span class="keyword">int</span> fd, <span class="keyword">int</span> method)</span></span><br><span class="line"></span>&#123;	 ...</span><br><span class="line">    server-&gt;fd                  = fd;	</span><br><span class="line">	 ...</span><br><span class="line">    ev_io_init(&amp;server-&gt;recv_ctx-&gt;io, server_recv_cb, fd, EV_READ);</span><br><span class="line">    ev_io_init(&amp;server-&gt;send_ctx-&gt;io, server_send_cb, fd, EV_WRITE);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> server;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">server_recv_cb</span><span class="params">(EV_P_ ev_io *w, <span class="keyword">int</span> revents)</span></span><br><span class="line"></span>&#123;	...</span><br><span class="line">    <span class="keyword">if</span> (remote == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        buf = server-&gt;buf;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buf = remote-&gt;buf;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    r = recv(server-&gt;fd, buf-&gt;<span class="built_in">array</span>, BUF_SIZE, <span class="number">0</span>); </span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p><code>server_recv_cb</code>函数比较长，当<code>server-&gt;stage</code>到达阶段<code>5</code>时，<code>create_remote</code>会根据前面解析好的shadowsocks服务器ip和端口来创建socket，得到remotefd。下一次循环ss-local作为本地socks客户端，会尝试与远程shadowsocks服务器建立连接。</p>
+<p><code>server_recv_cb</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">    ...</span><br><span class="line">                server-&gt;stage = <span class="number">5</span>;</span><br><span class="line">...</span><br><span class="line">                <span class="keyword">if</span> ((acl &amp;&amp; (request-&gt;atyp == <span class="number">1</span> || request-&gt;atyp == <span class="number">4</span>) &amp;&amp; acl_match_ip(host))) &#123;</span><br><span class="line">                    <span class="keyword">struct</span> sockaddr_storage storage;</span><br><span class="line">                    <span class="built_in">memset</span>(&amp;storage, <span class="number">0</span>, <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sockaddr_storage));</span><br><span class="line">                    <span class="keyword">if</span> (get_sockaddr(host, port, &amp;storage, <span class="number">0</span>) != -<span class="number">1</span>) &#123;</span><br><span class="line">                        remote         = create_remote(server-&gt;listener, (<span class="keyword">struct</span> sockaddr *)&amp;storage);</span><br><span class="line">                        remote-&gt;direct = <span class="number">1</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    remote = create_remote(server-&gt;listener, <span class="literal">NULL</span>);</span><br><span class="line">                &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">  <span class="keyword">if</span> (server-&gt;stage == <span class="number">5</span>) &#123;</span><br><span class="line">  ...</span><br><span class="line">      <span class="keyword">if</span> (!remote-&gt;send_ctx-&gt;connected) &#123;</span><br><span class="line">...</span><br><span class="line">          remote-&gt;buf-&gt;idx = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">          <span class="keyword">if</span> (!fast_open || remote-&gt;direct) &#123;</span><br><span class="line">              <span class="comment">// connecting, wait until connected</span></span><br><span class="line">              connect(remote-&gt;fd, (<span class="keyword">struct</span> sockaddr *)&amp;(remote-&gt;addr), remote-&gt;addr_len);</span><br></pre></td></tr></table></figure>
+<p>这里的buf还是<code>server-&gt;buf</code>，且<code>buf-&gt;len &gt; 0</code>。远程socks服务端建立连接成功后<code>remote-&gt;direct</code>置为1，把<code>server-&gt;buf-&gt;array</code>数据直接<code>memcpy</code>到<code>remote-&gt;buf-&gt;array</code>。为一下步数据加密做准备。</p>
+<figure class="highlight ocaml"><table><tr><td class="code"><pre><span class="line">    <span class="keyword">if</span> (remote == <span class="type">NULL</span>) &#123;</span><br><span class="line">        buf = server-&gt;buf;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buf = remote-&gt;buf;</span><br><span class="line">    &#125;</span><br><span class="line">...</span><br><span class="line">                <span class="keyword">if</span> (!remote-&gt;direct) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (auth) &#123;</span><br><span class="line">                        abuf-&gt;<span class="built_in">array</span>[<span class="number">0</span>] |= <span class="type">ONETIMEAUTH_FLAG</span>;</span><br><span class="line">                        ss_onetimeauth(abuf, server-&gt;e_ctx-&gt;evp.iv, <span class="type">BUF_SIZE</span>);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    brealloc(remote-&gt;buf, buf-&gt;len + abuf-&gt;len, <span class="type">BUF_SIZE</span>);</span><br><span class="line">                    memcpy(remote-&gt;buf-&gt;<span class="built_in">array</span>, abuf-&gt;<span class="built_in">array</span>, abuf-&gt;len);</span><br><span class="line">                    remote-&gt;buf-&gt;len = buf-&gt;len + abuf-&gt;len;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (buf-&gt;len &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (auth) &#123;</span><br><span class="line">                            ss_gen_hash(buf, &amp;remote-&gt;counter, server-&gt;e_ctx, <span class="type">BUF_SIZE</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                        memcpy(remote-&gt;buf-&gt;<span class="built_in">array</span> + abuf-&gt;len, buf-&gt;<span class="built_in">array</span>, buf-&gt;len);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (buf-&gt;len &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        memcpy(remote-&gt;buf-&gt;<span class="built_in">array</span>, buf-&gt;<span class="built_in">array</span>, buf-&gt;len);</span><br><span class="line">                        remote-&gt;buf-&gt;len = buf-&gt;len;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br></pre></td></tr></table></figure>
+<p>加密初始化时，ss-local-vpn.conf中password作为<code>salt</code>参与加密过程，method在<code>supported_ciphers</code>中找到method对应的下标m，决定对称加密算法(推荐使用<code>aes-256-cfb</code>)。确定算法后，远程socks服务端采用相同的算法进行解密。这样ss-local和远程shadowsocks服务进程就可以理解双方传递的数据了。注意，<strong>这里并不需要和服务端进行密钥交换，加密的设计初衷只是为了混淆传数据，增加GFW检查流量特征的计算量</strong>。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">enc_init</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *pass, <span class="keyword">const</span> <span class="keyword">char</span> *method)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = TABLE;</span><br><span class="line">    <span class="keyword">if</span> (method != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (m = TABLE; m &lt; CIPHER_NUM; m++)</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">strcmp</span>(method, supported_ciphers[m]) == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">...</span><br><span class="line">        enc_key_init(m, pass);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>bytes_to_key</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bytes_to_key</span><span class="params">(<span class="keyword">const</span> cipher_kt_t *cipher, <span class="keyword">const</span> digest_type_t *md,</span><br><span class="line">                 <span class="keyword">const</span> uint8_t *pass, uint8_t *key, uint8_t *iv)</span></span><br><span class="line"></span>&#123; ...</span><br><span class="line"><span class="preprocessor">#<span class="keyword">if</span> defined(USE_CRYPTO_OPENSSL)</span></span><br><span class="line">    <span class="keyword">return</span> EVP_BytesToKey(cipher, md, <span class="literal">NULL</span>, pass, datal, <span class="number">1</span>, key, iv);</span><br></pre></td></tr></table></figure>
+<p><code>enc_key_init</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">enc_key_init</span><span class="params">(<span class="keyword">int</span> method, <span class="keyword">const</span> <span class="keyword">char</span> *pass)</span></span><br><span class="line"></span>&#123;...</span><br><span class="line">        cipher = (<span class="keyword">cipher_kt_t</span> *)get_cipher_type(method)</span><br><span class="line">...</span><br><span class="line">    enc_key_len = bytes_to_key(cipher, md, (<span class="keyword">const</span> <span class="keyword">uint8_t</span> *)pass, enc_key, iv);</span><br></pre></td></tr></table></figure>
+<p><code>EVP_BytesToKey</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">EVP_BytesToKey</span><span class="params">(<span class="keyword">const</span> EVP_CIPHER *type, <span class="keyword">const</span> EVP_MD *md, </span><br><span class="line">	     <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *salt, <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *data, <span class="keyword">int</span> datal,</span><br><span class="line">	     <span class="keyword">int</span> count, <span class="keyword">unsigned</span> <span class="keyword">char</span> *key, <span class="keyword">unsigned</span> <span class="keyword">char</span> *iv)</span></span><br><span class="line"></span>&#123; ...</span><br><span class="line">		<span class="keyword">if</span> (salt != <span class="literal">NULL</span>)</span><br><span class="line">			<span class="keyword">if</span> (!EVP_DigestUpdate(&amp;c,salt,PKCS5_SALT_LEN))</span><br><span class="line">				<span class="keyword">goto</span> err;</span><br></pre></td></tr></table></figure>
+<p>接着，对数据加密。</p>
+<figure class="highlight lasso"><table><tr><td class="code"><pre><span class="line">            <span class="comment">// insert shadowsocks header</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="subst">!</span>remote<span class="subst">-&gt;</span>direct) &#123;</span><br><span class="line"><span class="attribute">...</span>            </span><br><span class="line">               int err = ss_encrypt(remote<span class="subst">-&gt;</span>buf, server<span class="subst">-&gt;</span>e_ctx, BUF_SIZE);</span><br><span class="line"><span class="attribute">...</span></span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure>
+<p>如果内核空间remotefd的send buffer还没满，<code>remote_send_cb</code>被回调，若<code>remote-&gt;buf-&gt;len</code>长度大于0，说明有数据正在等待发送，ss-local会通过<code>send</code>直接发送给远程socks服务端。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">remote_send_cb</span><span class="params">(EV_P_ ev_io *w, <span class="keyword">int</span> revents)</span></span><br><span class="line"></span>&#123;	...</span><br><span class="line">    <span class="keyword">remote_t</span> *remote              = remote_send_ctx-&gt;remote;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (remote-&gt;buf-&gt;len == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// close and free</span></span><br><span class="line">        close_and_free_remote(EV_A_ remote);</span><br><span class="line">        close_and_free_server(EV_A_ server);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// has data to send</span></span><br><span class="line">        <span class="keyword">ssize_t</span> s = send(remote-&gt;fd, remote-&gt;buf-&gt;<span class="built_in">array</span> + remote-&gt;buf-&gt;idx,</span><br><span class="line">                         remote-&gt;buf-&gt;len, <span class="number">0</span>);</span><br><span class="line">            ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分析到这儿，ss-local发送数据给远程shadowsocks服务端的基本流程清楚了，但还有个问题，<strong>本地连上ss-local是哪个进程？</strong></p>
+<hr>
+<h1 id="0x04_tun2socks"><a href="#0x04_tun2socks" class="headerlink" title="0x04 tun2socks"></a>0x04 tun2socks</h1><p>由于ss-local连上了shadowsocks服务器，需要科学上网的本地进程都得想办法连上ss-local。要让进程都连上ss-local要做许多配置工作，最好是能有一个<strong>全局代理</strong>把流量都转给ss-local。</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#26412;&#22320;&#36827;&#31243; &#60;=&#62; &#20840;&#23616;&#20195;&#29702; &#60;=&#62; ss-local</span><br></pre></td></tr></table></figure>
+<p>Android 4.0推出了<code>VpnSerivce</code>，目的是让开发者在没有root权限的情况下也能实现全局代理。<code>VpnService</code>会创建虚拟网卡设备：<strong>tun设备</strong>（对应的文件叫<strong>tun设备文件</strong>）。vpn进程shadowsocks:vpn拿到tunfd后就拥有了读写虚拟网卡ip包的能力，但是采用socks5协议的ss-local工作在L3，没法直接处理L4的ip包，所以<strong>tun2socks</strong>成了让ss-android成为全局socks代理的关键。tun2socks在用户态实现了一个轻量级的TCP/IP栈（lwip），来实现L3的包转成L4的数据流。</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#26412;&#22320;&#36827;&#31243; =&#62; tun&#35774;&#22791;&#65288;&#34394;&#25311;&#32593;&#21345;&#65289;=&#62; tun2socks =&#62; ss-local =&#62; &#29289;&#29702;&#32593;&#21345; =&#62; ...</span><br></pre></td></tr></table></figure>
+<p>有了tun2socks的L3转L4的能力，还剩下2个关键问题需要解决：</p>
+<ul>
+<li>问题1：<strong>怎么让tun2socks直接读取tun设备的ip包？</strong></li>
+<li>问题2：<strong>怎么让所有的包都经过tun设备？</strong></li>
+</ul>
+<p>问题1的解决办法是让tun2socks跨进程拿到tunfd。tunfd是在shadowsocks:vpn进程<code>startVpn</code>时返回的。tun2socks是native进程，而shadowsocks:vpn是java进程，为了在不同的进程中共享tunfd，shadowsocks:vpn作为客户端进程和tun2socks通过unix domain socket方式进行IPC，对应的socket是/data/data/com.github.shadowsocks/sock_path。通过jni方法<code>System.sendfd</code>传递tunfd。</p>
+<p>ShadowsocksVpnService.scala</p>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">handleConnection</span>:</span> <span class="type">Boolean</span> = &#123;</span><br><span class="line">    startShadowsocksDaemon()</span><br><span class="line">...</span><br><span class="line">    <span class="keyword">val</span> fd = startVpn()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (fd != -<span class="number">1</span>) &#123;</span><br><span class="line">      <span class="keyword">var</span> tries = <span class="number">1</span></span><br><span class="line">      <span class="keyword">while</span> (tries &lt; <span class="number">5</span>) &#123;</span><br><span class="line">        <span class="type">Thread</span>.sleep(<span class="number">1000</span> * tries)</span><br><span class="line">        <span class="keyword">if</span> (<span class="type">System</span>.sendfd(fd) != -<span class="number">1</span>) &#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        tries += <span class="number">1</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<p><code>System.sendfd</code>对应native方法<code>Java_com_github_shadowsocks_system_sendfd</code>。shadowsocks:vpn拿到tunfd后，利用<code>ancil_send_fd</code>传给tun2socks进程。这样tun2socks就具备直接读写虚拟网卡ip包的能力了。</p>
+<p>System.cpp</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function">jint <span class="title">Java_com_github_shadowsocks_system_sendfd</span><span class="params">(JNIEnv *env, jobject thiz, jint tun_fd)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> fd;</span><br><span class="line">    <span class="keyword">struct</span> sockaddr_un addr;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ( (fd = socket(AF_UNIX, SOCK_STREAM, <span class="number">0</span>)) == -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> (jint)-<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">memset</span>(&amp;addr, <span class="number">0</span>, <span class="keyword">sizeof</span>(addr));</span><br><span class="line">    addr.sun_family = AF_UNIX;</span><br><span class="line">    <span class="built_in">strncpy</span>(addr.sun_path, <span class="string">"/data/data/com.github.shadowsocks/sock_path"</span>, <span class="keyword">sizeof</span>(addr.sun_path)-<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (connect(fd, (<span class="keyword">struct</span> sockaddr*)&amp;addr, <span class="keyword">sizeof</span>(addr)) == -<span class="number">1</span>) &#123;</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span> (jint)-<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ancil_send_fd(fd, tun_fd)) &#123;</span><br><span class="line">        close(fd);</span><br><span class="line">        <span class="keyword">return</span> (jint)-<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(fd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>tun2socks能直接读写ip包还只是开始，问题2<strong>怎么让所有的包都经过tun设备</strong>，我们看一下tunfd的创建过程。</p>
+<p>ShadowsocksVpnService.scala</p>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line">  <span class="keyword">val</span> <span class="type">VPN_MTU</span> = <span class="number">1500</span></span><br><span class="line">  <span class="keyword">val</span> <span class="type">PRIVATE_VLAN</span> = <span class="string">"26.26.26.%s"</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">startVpn</span>(</span>): <span class="type">Int</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> builder = <span class="keyword">new</span> <span class="type">Builder</span>()</span><br><span class="line">    builder</span><br><span class="line">      .setSession(config.profileName)</span><br><span class="line">      .setMtu(<span class="type">VPN_MTU</span>)</span><br><span class="line">      .addAddress(<span class="type">PRIVATE_VLAN</span>.formatLocal(<span class="type">Locale</span>.<span class="type">ENGLISH</span>, <span class="string">"1"</span>), <span class="number">24</span>)</span><br><span class="line">      .addDnsServer(<span class="string">"8.8.8.8"</span>)</span><br><span class="line">...</span><br><span class="line">    <span class="keyword">if</span> (config.route == <span class="type">Route</span>.<span class="type">ALL</span> || config.route == <span class="type">Route</span>.<span class="type">BYPASS_CHN</span>) &#123;</span><br><span class="line">      builder.addRoute(<span class="string">"0.0.0.0"</span>, <span class="number">0</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123; ... &#125;</span><br><span class="line"></span><br><span class="line">    builder.addRoute(<span class="string">"8.8.0.0"</span>, <span class="number">16</span>)</span><br><span class="line">...</span><br><span class="line">      conn = builder.establish()</span><br><span class="line">...</span><br><span class="line">    <span class="keyword">val</span> fd = conn.getFd</span><br></pre></td></tr></table></figure>
+<p>首先，在用户允许Vpn的情况下，shadowsocks:vpn会尝试用<code>builder.establish</code>创建tun设备。<code>conn.getFd</code>返回的fd就是tun设备fd，前面我们知道，有了tunfd可以读写ip数据包了。</p>
+<p>ps：vpn连接在整个系统中只能存在一个，新的vpn连接会去覆盖老的。tunfd被close了或者vpn进程挂了，网络就会自动恢复。</p>
+<p>接着，<code>builder.addAddress</code>添加<code>26.26.26.1/24</code>到tun设备，作为tun设备ip地址。<code>addDnsServer</code>把<code>8.8.8.8</code>（google dns服务器地址）作为vpn连接的dns解析服务器地址。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@android:/dev <span class="comment"># ifconfig tun0</span></span><br><span class="line">tun0: ip <span class="number">26.26</span>.<span class="number">26.1</span> mask <span class="number">255.255</span>.<span class="number">255.0</span> flags [up point-to-point running]</span><br></pre></td></tr></table></figure>
+<p>如果Route设置工作在<code>ALL</code>或<code>BYPASS_CHN</code>模式，路由<code>0.0.0.0:0</code>被添加到tun设备，不管包的目标ip是多少都保证经过tun设备，也就是说，<code>ALL</code>或<code>BYPASS_CHN</code>模式下<strong>所有本地流量</strong>都会从tun设备出去。此外，默认<code>8.8.0.0:16</code>也添加到tun设备路由，保证至少到google dns服务器做dns解析的包经过tun设备。</p>
+<p>ip路由信息：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@android:/ <span class="comment"># ip r</span></span><br><span class="line"><span class="number">0.0</span>.<span class="number">0.0</span>/<span class="number">1</span> dev tun0  scope link</span><br><span class="line">default via <span class="number">10.0</span>.<span class="number">3.2</span> dev eth1</span><br><span class="line">default via <span class="number">10.0</span>.<span class="number">3.2</span> dev eth1  metric <span class="number">205</span></span><br><span class="line"><span class="number">8.8</span>.<span class="number">0.0</span>/<span class="number">16</span> dev tun0  scope link</span><br><span class="line"><span class="number">10.0</span>.<span class="number">3.0</span>/<span class="number">24</span> dev eth1  proto kernel  scope link  src <span class="number">10.0</span>.<span class="number">3.15</span>  metric <span class="number">205</span></span><br><span class="line"><span class="number">10.0</span>.<span class="number">3.2</span> dev eth1  scope link</span><br><span class="line"><span class="number">26.26</span>.<span class="number">26.0</span>/<span class="number">24</span> dev tun0  proto kernel  scope link  src <span class="number">26.26</span>.<span class="number">26.1</span></span><br><span class="line"><span class="number">128.0</span>.<span class="number">0.0</span>/<span class="number">1</span> dev tun0  scope link</span><br><span class="line"><span class="number">192.168</span>.<span class="number">58.0</span>/<span class="number">24</span> dev eth0  proto kernel  scope link  src <span class="number">192.168</span>.<span class="number">58.101</span></span><br></pre></td></tr></table></figure>
+<p>但是，<code>ALL</code>或<code>BYPASS_CHN</code>模式下也会引发一个<strong>隐藏的坑</strong>：如果所有的流量都走tun设备（L3），tun2socks又从tunfd读出L3的包拆成L4的数据流转给ss-local，从ss-local出来准备发给远程shadowsocks服务器的流量（L4）又必然会到达tun设备(L3)，这样就直接<strong>死循环</strong>了。</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">tun&#35774;&#22791;(L3) =&#62; tun2socks(L3 -&#62; L4) =&#62; ss-local(L4) =&#62; tun&#35774;&#22791;(L3) =&#62; ...</span><br></pre></td></tr></table></figure>
+<p>解决办法就是把远程shadowsocks服务器remotefd“保护”起来，让发到shadowsocks服务器流量不再走tun设备，而是直接通过物理网卡。在ss-local的<code>server_recv_cb</code>把remotefd传给<code>protect_socket</code>：</p>
+<p>local.c</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">server_recv_cb</span><span class="params">(EV_P_ ev_io *w, <span class="keyword">int</span> revents)</span></span><br><span class="line"></span>&#123;	...</span><br><span class="line">                <span class="keyword">if</span> (vpn) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (protect_socket(remote-&gt;fd) == -<span class="number">1</span>) &#123;</span><br></pre></td></tr></table></figure>
+<p>和前面跨进程传递tunfd类似，不过这里IPC双方换成了ss-local和shadowsocks:vpn，ss-local通过unix domain socket方式和shadowsocks:vpn进程进行本地IPC（0x02提到过），利用<code>ancil_send_fd</code>传递remotefd给shadowsocks:vpn进程。</p>
+<p>android.c</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">protect_socket</span><span class="params">(<span class="keyword">int</span> fd)</span></span><br><span class="line"></span>&#123;	...</span><br><span class="line">    <span class="keyword">if</span> ((sock = socket(AF_UNIX, SOCK_STREAM, <span class="number">0</span>)) == -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> path[] = <span class="string">"/data/data/com.github.shadowsocks/protect_path"</span>;</span><br><span class="line">    ...</span><br><span class="line">    addr.sun_family = AF_UNIX;</span><br><span class="line">    <span class="built_in">strncpy</span>(addr.sun_path, path, <span class="keyword">sizeof</span>(addr.sun_path) - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (connect(sock, (<span class="keyword">struct</span> sockaddr *)&amp;addr, <span class="keyword">sizeof</span>(addr)) == -<span class="number">1</span>) &#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="keyword">if</span> (ancil_send_fd(sock, fd)) &#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>shadowsocks:vpn通过<code>socket.getAncillaryFileDescriptors</code>先拿到<code>FileDescriptor</code>，再通过<code>getInt.invoke</code>反射读出remotefd，用<code>vpnService.protect(fd)</code>保护起来，从而避免死循环。</p>
+<p>ShadowsocksVpnThread.scala</p>
+<figure class="highlight scala"><table><tr><td class="code"><pre><span class="line"><span class="keyword">val</span> <span class="type">PATH</span> = <span class="string">"/data/data/com.github.shadowsocks/protect_path"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">run</span>(</span>) &#123;</span><br><span class="line">...</span><br><span class="line">  <span class="keyword">while</span> (isRunning) &#123;</span><br><span class="line">      <span class="keyword">val</span> socket = serverSocket.accept()</span><br><span class="line"></span><br><span class="line">      pool.execute(() =&gt; &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">	...</span><br><span class="line">          <span class="keyword">val</span> fds = socket.getAncillaryFileDescriptors</span><br><span class="line"></span><br><span class="line">          <span class="keyword">if</span> (fds.nonEmpty) &#123;</span><br><span class="line">            <span class="keyword">val</span> fd = getInt.invoke(fds(<span class="number">0</span>)).asInstanceOf[<span class="type">Int</span>]</span><br><span class="line">            <span class="keyword">val</span> ret = vpnService.protect(fd)</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Trick to close file decriptor</span></span><br><span class="line">            <span class="type">System</span>.jniclose(fd)</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="0x05_pdnsd_u4E0Ess-tunnel"><a href="#0x05_pdnsd_u4E0Ess-tunnel" class="headerlink" title="0x05 pdnsd与ss-tunnel"></a>0x05 pdnsd与ss-tunnel</h1><p>ss-android还剩下2个native进程<strong>pdnsd</strong>和<strong>ss-tunnel</strong>没有介绍，<a href="http://members.home.nl/p.a.rombouts/pdnsd/index.html#aboutpdnsd" target="_blank" rel="external">pdnsd</a>是一个带永久缓存的dns代理服务器，而ss-tunnel主要用来实现本地端口转发，为什么前面VpnService设置了DNSServer还需要pdnsd+ss-tunnel呢，pdnsd+ss-tunnel可以不启动吗？</p>
+<p>答案是：<strong>在设置udp转发的情况下可以</strong>。开启udp转发，做dns查询的udp包和其他udp包没有区别，都是通过ss-local转发给shadowsock服务器。我们重点看<strong>没有设置udp转发的情况</strong>。</p>
+<p>shadowsocks:vpn启动tun2socks进程的时候，如果<code>config.isUdpDns</code>为false，会把<code>--dnsgw</code>也就是dns网关地址<code>26.26.26.1:8153</code>作为tun2socks的启动参数。</p>
+<p>ShadowsocksVpnService.scala</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">startVpn</span><span class="params">()</span>:</span> Int = &#123;</span><br><span class="line">...</span><br><span class="line">  <span class="keyword">if</span> (config.isUdpDns)</span><br><span class="line">    cmd += <span class="string">" --enable-udprelay"</span></span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    cmd += <span class="string">" --dnsgw %s:8153"</span>.formatLocal(Locale.ENGLISH, PRIVATE_VLAN.formatLocal(Locale.ENGLISH, <span class="string">"1"</span>))</span><br></pre></td></tr></table></figure>
+<p>tun2socks的<code>process_device_dns_packet</code>一旦发现去做dns解析的udp包，就会把udp包的ip和端口强行改成dnsgw的ip和端口<code>26.26.26.1:8153</code>，而<code>8153</code>端口是pdnsd进程监听的端口。</p>
+<p>tun2socks.c</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">process_device_dns_packet</span> <span class="params">(uint8_t *data, <span class="keyword">int</span> data_len)</span></span><br><span class="line"></span>&#123; ...</span><br><span class="line">    <span class="comment">// do nothing if we don't have dnsgw</span></span><br><span class="line">    <span class="keyword">if</span> (!options.dnsgw) &#123;</span><br><span class="line">        <span class="keyword">goto</span> fail;</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">            <span class="comment">// to port 53 is considered a DNS packet</span></span><br><span class="line">            to_dns = udp_header.dest_port == hton16(<span class="number">53</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// from port 8153 is considered a DNS packet</span></span><br><span class="line">            from_dns = udp_header.source_port == dnsgw.ipv4.port;</span><br><span class="line">	...</span><br><span class="line">            <span class="comment">// modify DNS packet</span></span><br><span class="line">            <span class="keyword">if</span> (to_dns) &#123;</span><br><span class="line">            ...</span><br><span class="line">                <span class="comment">// build IP header</span></span><br><span class="line">                ipv4_header.destination_address = dnsgw.ipv4.ip;</span><br><span class="line">                ipv4_header.source_address = netif_ipaddr.ipv4;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// build UDP header</span></span><br><span class="line">                udp_header.dest_port = dnsgw.ipv4.port;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (from_dns) &#123;</span><br><span class="line">            ...                     </span><br><span class="line">                Connection * con = find_connection(udp_header.dest_port);                   </span><br><span class="line">                <span class="keyword">if</span> (con != <span class="literal">NULL</span>)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// build IP header</span></span><br><span class="line">                    ipv4_header.source_address = con-&gt;remote_addr.ipv4.ip;</span><br><span class="line">                    ipv4_header.destination_address = con-&gt;local_addr.ipv4.ip;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// build UDP header</span></span><br><span class="line">                    udp_header.source_port = con-&gt;remote_addr.ipv4.port;</span><br><span class="line"></span><br><span class="line">                    remove_connection(con);</span><br><span class="line"></span><br><span class="line">                &#125;</span><br></pre></td></tr></table></figure>
+<p>ss-tunnel会在本地起服务进程，然后同样转发dns查询的udp包，通过远程shadowsocks服务器给靠谱的dns服务器（例如<code>8.8.8.8:53</code>）。</p>
+<p>系统默认的dns查询就是走udp的，我们知道ss-android成为全局代理后，tun2socks已经把所有做dns查询的udp包都转给了dnsgw（pdnsd），如果pdnsd+ss-tunnel不启动，那么显然所有的dns查询都会失败。</p>
+<p>既然这么麻烦，那直接直接走udp转发不就好了吗，<strong>为什么还要用pdnsd+ss-tunnel呢？</strong></p>
+<p>这是因为GFW会在境内骨干路由器上做入侵检测，一旦发现是查询google.com这种不和谐域名，就会伪造一个错误的ip地址给查询者。android系统dns查询默认走udp，但udp是不可靠的，会把最先返给自己的ip当作是目标ip，这个伪造的ip当然是无法正常访问的，这就是所谓的<strong>dns污染</strong>。</p>
+<figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#23458;&#25143;&#31471;&#36827;&#31243; &#60;=&#62; &#36335;&#30001;&#22120;dns &#60;=&#62; &#36816;&#33829;&#21830;dns &#60;=&#62; | GFW | &#60;=&#62; &#26681;dns</span><br></pre></td></tr></table></figure>
+<p>而pdnsd主要用来提供一个无污染的dns，它不仅可以转发dns查询给上游dns服务器，修改TTL，提供缓存功能，尤为重要的是，pdnsd可以修改dns查询方式为tcp，<strong>从而避免dns污染</strong>。</p>
+<hr>
+<h1 id="0x06__u7ED3_u8BED"><a href="#0x06__u7ED3_u8BED" class="headerlink" title="0x06 结语"></a>0x06 结语</h1><p>ss-android最核心的功能几乎全是由c代码实现，依赖开源库也比较多，涉及到unix，内核，网络和安全等知识，加上ss-android的java层代码基本上是用scala写的，分析ss-android上层代码需要一定的scala功底，了解函数式编程等，这些都造成了ss-android学习的门槛。</p>
+<p>本篇文章希望对正在学习ss-android的朋友有所帮助，由于时间有限，分析有误的地方也恳请指出。</p>
+<p>最后附上本人的github：<a href="https://github.com/JLLK" target="_blank" rel="external">https://github.com/JLLK</a>。</p>
+<hr>
+<h4 id="u7248_u6743_u58F0_u660E"><a href="#u7248_u6743_u58F0_u660E" class="headerlink" title="版权声明"></a>版权声明</h4><p><img src="http://7xpcru.com1.z0.glb.clouddn.com/cc.png" alt=""></p>
+<p><a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a> by <a href="http://ct2wj.com/about" target="_blank" rel="external">CHEN TAO</a> is licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">Creative Commons BY-NC-ND 4.0 International License</a>.</p>
+<p>由<a href="http://ct2wj.com/about" target="_blank" rel="external">陈涛</a>创作并维护的<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客采用<a href="http://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="external">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。</p>
+<p>本文首发于<a href="http://ct2wj.com" target="_blank" rel="external">CT2WJ</a>博客（ <a href="http://ct2wj.com" target="_blank" rel="external">http://ct2wj.com</a> ），版权所有，侵权必究。</p>
+<p>本文永久链接：<a href="http://ct2wj.com/2016/02/28/shadowsocks-android-source-code-analysis/" target="_blank" rel="external">http://ct2wj.com/2016/02/28/shadowsocks-android-source-code-analysis/</a></p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag">#Android</a>
+          
+            <a href="/tags/pdnsd/" rel="tag">#pdnsd</a>
+          
+            <a href="/tags/scala/" rel="tag">#scala</a>
+          
+            <a href="/tags/shadowsocks/" rel="tag">#shadowsocks</a>
+          
+            <a href="/tags/tun2socks/" rel="tag">#tun2socks</a>
+          
+            <a href="/tags/vpn/" rel="tag">#vpn</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/02/09/the-way-to-make-and-lazy-load-secondary-dexes-according-to-the-module/" rel="next" title="一种按模块拆分dex和适机加载的方法">
+                <i class="fa fa-chevron-left"></i> 一种按模块拆分dex和适机加载的方法
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/02/28/shadowsocks-android-source-code-analysis/"
+           data-title="shadowsocks-android源码解析" data-url="http://www.ct2wj.com/2016/02/28/shadowsocks-android-source-code-analysis/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://7xpcru.com1.z0.glb.clouddn.com/jllk.png"
+               alt="tomchen" />
+          <p class="site-author-name" itemprop="name">tomchen</p>
+          <p class="site-description motion-element" itemprop="description">This dog is lazy, left nothing</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">posts</span>
+            </a>
+          </div>
+          
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/jllk" target="_blank">
+                  
+                    <i class="fa fa-globe"></i> github
+                  
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-nd/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-nd.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00__u7B80_u4ECB"><span class="nav-text">0x00 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01_ss-android_u8FDB_u7A0B_u6982_u8FF0"><span class="nav-text">0x01 ss-android进程概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02_shadowsocks_u4E0Eshadowsocks_3Avpn"><span class="nav-text">0x02 shadowsocks与shadowsocks:vpn</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03_ss-local"><span class="nav-text">0x03 ss-local</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04_tun2socks"><span class="nav-text">0x04 tun2socks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x05_pdnsd_u4E0Ess-tunnel"><span class="nav-text">0x05 pdnsd与ss-tunnel</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x06__u7ED3_u8BED"><span class="nav-text">0x06 结语</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#u7248_u6743_u58F0_u660E"><span class="nav-text">版权声明</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tomchen</span>
+</div>
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="http://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"ct2wj"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>
