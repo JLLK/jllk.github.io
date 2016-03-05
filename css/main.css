@@ -1528,7 +1528,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #0b2841;
+  background: #11f;
 }
 .sidebar-nav {
   margin: 0 0 20px;
@@ -2057,4 +2057,79 @@ pre .javascript .function {
   .use-motion .site-search form {
     top: 0 !important;
   }
+}
+.follow-tips {
+  position: fixed;
+  bottom: 200px;
+  right: 0;
+  border-radius: 3px;
+  white-space: nowrap;
+  min-width: 200px;
+  min-height: 50px;
+  overflow: hidden;
+  opacity: 1;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 20px;
+  font-family: "Helvetica Neue", "HelveticaNeue", Helvetica, Arial, sans-serif;
+  background-color: #fff;
+  color: rgba(0,0,0,0.73);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  transition: left 0.3s, opacity 0.3s 0.2s ease-in-out;
+}
+.follow-tips .avatar {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  margin: -19px 10px 10px;
+  width: 38px;
+  height: 38px;
+  background-size: cover;
+}
+.follow-tips .blog-name-title {
+  display: block;
+  padding: 10px 100px 10px 60px;
+  line-height: 18px;
+  color: rgba(0,0,0,0.73);
+}
+.follow-tips .blog-name-title .blog-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(0,0,0,0.73);
+}
+.follow-tips .blog-name-title .blog-title {
+  display: block;
+  font-size: 14px;
+  white-space: nowrap;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(0,0,0,0.47);
+}
+.follow-tips .follow-button {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin: -15px 10px 0 0;
+  height: 29px;
+  padding: 0 10px;
+  color: #fff;
+  font-size: 13px;
+  line-height: 29px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 3px;
+  background-color: #fa8919;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  background-clip: padding-box;
 }
