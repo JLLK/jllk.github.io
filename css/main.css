@@ -1528,7 +1528,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #adff78;
+  background: #0bff2f;
 }
 .sidebar-nav {
   margin: 0 0 20px;
@@ -2064,6 +2064,7 @@ pre .javascript .function {
   right: 0;
   border-radius: 3px;
   white-space: nowrap;
+  display: none;
   min-width: 200px;
   min-height: 50px;
   overflow: hidden;
