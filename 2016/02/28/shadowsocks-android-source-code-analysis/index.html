@@ -71,7 +71,7 @@
 0x01 ss-andr">
 <meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/ProcessOfShadowsocks.jpg">
 <meta property="og:image" content="http://7xpcru.com1.z0.glb.clouddn.com/cc.png">
-<meta property="og:updated_time" content="2016-03-01T00:16:56.000Z">
+<meta property="og:updated_time" content="2016-05-06T00:40:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="shadowsocks-android源码解析">
 <meta name="twitter:description" content="0x00 简介shadowsocks-android(ss-android)是一款android上的科学上网软件，特点是无需root权限就能实现全局代理。作为一个shadowsocks重度使用者，本来想学习一下，但发现网上相关文章和资料还比较少，因此有了本篇文章，旨在分享自己对ss-android源码的一些理解。本文分析的源码基于ss-android的2.9.11版本。
@@ -407,7 +407,7 @@
 <hr>
 <h1 id="0x04_tun2socks"><a href="#0x04_tun2socks" class="headerlink" title="0x04 tun2socks"></a>0x04 tun2socks</h1><p>由于ss-local连上了shadowsocks服务器，需要科学上网的本地进程都得想办法连上ss-local。要让进程都连上ss-local要做额外配置工作，最好是能有一个<strong>全局代理</strong>把流量都转给ss-local。</p>
 <figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#26412;&#22320;&#36827;&#31243; &#60;=&#62; &#20840;&#23616;&#20195;&#29702; &#60;=&#62; ss-local</span><br></pre></td></tr></table></figure>
-<p>Android 4.0推出了<code>VpnSerivce</code>，目的是让开发者在没有root权限的情况下也能实现全局代理。<code>VpnService</code>会创建虚拟网卡设备：<strong>tun设备</strong>（对应的文件叫<strong>tun设备文件</strong>）。vpn进程shadowsocks:vpn拿到tunfd后就拥有了读写虚拟网卡ip包的能力，但是采用socks5协议的ss-local工作在L3，没法直接处理L4的ip包，所以<strong>tun2socks</strong>成了让ss-android成为全局socks代理的关键。tun2socks在用户态实现了一个轻量级的TCP/IP栈（lwip），来实现L3的包转成L4的数据流。</p>
+<p>Android 4.0推出了<code>VpnSerivce</code>，目的是让开发者在没有root权限的情况下也能实现全局代理。<code>VpnService</code>会创建虚拟网卡设备：<strong>tun设备</strong>（对应的文件叫<strong>tun设备文件</strong>）。vpn进程shadowsocks:vpn拿到tunfd后就拥有了读写虚拟网卡ip包的能力，但是采用socks5协议的ss-local工作在L4，没法直接处理L3的ip包，所以<strong>tun2socks</strong>成了让ss-android成为全局socks代理的关键。tun2socks在用户态实现了一个轻量级的TCP/IP栈（lwip），来实现L3的包转成L4的数据流。</p>
 <figure class="highlight"><table><tr><td class="code"><pre><span class="line">&#26412;&#22320;&#36827;&#31243; =&#62; tun&#35774;&#22791;&#65288;&#34394;&#25311;&#32593;&#21345;&#65289;=&#62; tun2socks =&#62; ss-local =&#62; &#29289;&#29702;&#32593;&#21345; =&#62; ...</span><br></pre></td></tr></table></figure>
 <p>有了tun2socks的L3转L4的能力，还剩下2个关键问题需要解决：</p>
 <ul>
